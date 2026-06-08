@@ -3,13 +3,21 @@ info:
   # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: GHRI Foundation API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: contact
+    description: Contact form submissions
+  - name: volunteer
+    description: Volunteer applications
+  - name: newsletter
+    description: Newsletter subscriptions
+  - name: stats
+    description: Impact statistics
 paths:
   /healthz:
     get:
@@ -24,6 +32,110 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /contact:
+    post:
+      operationId: submitContact
+      tags: [contact]
+      summary: Submit contact form
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ContactInput"
+      responses:
+        "201":
+          description: Contact submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /volunteer:
+    post:
+      operationId: submitVolunteer
+      tags: [volunteer]
+      summary: Submit volunteer application
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolunteerInput"
+      responses:
+        "201":
+          description: Application submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /newsletter:
+    post:
+      operationId: subscribeNewsletter
+      tags: [newsletter]
+      summary: Subscribe to newsletter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewsletterInput"
+      responses:
+        "201":
+          description: Subscribed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /stats:
+    get:
+      operationId: getStats
+      tags: [stats]
+      summary: Get impact statistics
+      responses:
+        "200":
+          description: Impact statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImpactStats"
+
+  /blog:
+    get:
+      operationId: getBlogPosts
+      tags: [stats]
+      summary: Get blog posts
+      responses:
+        "200":
+          description: List of blog posts
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BlogPost"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +146,101 @@ components:
       required:
         - status
 
+    SuccessResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    ContactInput:
+      type: object
+      required: [name, email, message]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        subject:
+          type: ["string", "null"]
+        message:
+          type: string
+          minLength: 1
+
+    VolunteerInput:
+      type: object
+      required: [name, email, profession, interestArea]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+        profession:
+          type: string
+        interestArea:
+          type: string
+          enum:
+            - healthcare_professional
+            - student_volunteer
+            - community_outreach
+            - fundraising
+            - technology
+
+    NewsletterInput:
+      type: object
+      required: [email]
+      properties:
+        email:
+          type: string
+          format: email
+        name:
+          type: ["string", "null"]
+
+    ImpactStats:
+      type: object
+      properties:
+        ruralCommunitiesReached:
+          type: integer
+        healthcarePartnerships:
+          type: integer
+        volunteerProfessionals:
+          type: integer
+        livesImpacted:
+          type: integer
+      required:
+        - ruralCommunitiesReached
+        - healthcarePartnerships
+        - volunteerProfessionals
+        - livesImpacted
+
+    BlogPost:
+      type: object
+      required: [id, title, excerpt, category, publishedAt, slug]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        excerpt:
+          type: string
+        category:
+          type: string
+        publishedAt:
+          type: string
+        slug:
+          type: string
+        imageUrl:
+          type: ["string", "null"]
