@@ -4,13 +4,12 @@ import { Layout } from "@/components/layout/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { useGetStats, useSubscribeNewsletter } from "@workspace/api-client-react";
+import { useSubscribeNewsletter } from "@workspace/api-client-react";
 import { motion } from "framer-motion";
-import { Heart, Stethoscope, Users, MonitorSmartphone, ArrowRight, Quote } from "lucide-react";
+import { Heart, Stethoscope, Users, MonitorSmartphone, ArrowRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Home() {
-  const { data: stats, isLoading: statsLoading } = useGetStats();
   const subscribe = useSubscribeNewsletter();
   const { toast } = useToast();
   const [email, setEmail] = useState("");
@@ -86,36 +85,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Impact Stats */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            {[
-              { label: "Rural Communities Reached", value: stats?.ruralCommunitiesReached || 120 },
-              { label: "Healthcare Partnerships", value: stats?.healthcarePartnerships || 45 },
-              { label: "Volunteer Professionals", value: stats?.volunteerProfessionals || 350 },
-              { label: "Lives Impacted", value: stats?.livesImpacted || 25000 },
-            ].map((stat, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="text-center space-y-2"
-              >
-                {statsLoading ? (
-                  <div className="h-16 w-32 bg-gray-200 animate-pulse rounded-md mx-auto" />
-                ) : (
-                  <h3 className="text-4xl md:text-5xl font-bold text-primary">{stat.value.toLocaleString()}+</h3>
-                )}
-                <p className="text-sm md:text-base text-muted-foreground font-medium uppercase tracking-wider">{stat.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Our Work */}
       <section className="py-24 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6">
@@ -170,31 +139,6 @@ export default function Home() {
             <div className="hidden md:block">
               {/* Optional: Add an image here later */}
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-24 bg-white">
-        <div className="container mx-auto px-4 md:px-6">
-          <h2 className="text-3xl md:text-4xl font-bold text-secondary text-center mb-16">Voices of Impact</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { quote: "GHRI connected me with a doctor when I had nowhere else to turn. They didn't just treat my condition, they treated me with dignity.", author: "Maria S.", role: "Community Member" },
-              { quote: "Volunteering with GHRI has been the most fulfilling experience of my medical career. We are making a tangible difference every single day.", author: "Dr. James L.", role: "Healthcare Volunteer" },
-              { quote: "Our partnership with GHRI has expanded our reach tenfold. Their approach to community health is sustainable, innovative, and deeply human.", author: "Sarah Jenkins", role: "Partner Organization" }
-            ].map((t, i) => (
-              <Card key={i} className="bg-gray-50 border-none shadow-sm">
-                <CardContent className="p-8 space-y-6">
-                  <Quote className="w-10 h-10 text-primary/40" />
-                  <p className="text-lg text-secondary/80 italic">"{t.quote}"</p>
-                  <div>
-                    <p className="font-bold text-secondary">{t.author}</p>
-                    <p className="text-sm text-primary">{t.role}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
           </div>
         </div>
       </section>
