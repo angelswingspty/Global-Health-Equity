@@ -85,12 +85,18 @@ router.post(
         type,
         notes: notes ?? null,
         status: "scheduled",
-        videoRoomUrl:
-          type === "video"
-            ? `https://meet.ghri.org/room/${Math.random().toString(36).slice(2, 9)}`
-            : null,
+        videoRoomUrl: null,
       })
       .returning();
+
+    // Set deterministic Jitsi room URL after we have the appointment ID
+    const [apptWithRoom] = type === "video"
+      ? await db
+          .update(appointmentsTable)
+          .set({ videoRoomUrl: `https://meet.jit.si/ghri-appt-${appt.id}` })
+          .where(eq(appointmentsTable.id, appt.id))
+          .returning()
+      : [appt];
 
     await logAudit("CREATE_APPOINTMENT", {
       userId: patientId,
@@ -99,7 +105,7 @@ router.post(
       req,
     });
 
-    res.status(201).json(await withUserNames(appt));
+    res.status(201).json(await withUserNames(apptWithRoom));
   }
 );
 
