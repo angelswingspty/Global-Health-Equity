@@ -342,7 +342,251 @@ export interface AuditLogEntry {
   createdAt: string;
 }
 
+export interface IntakeFormResponse {
+  id?: number;
+  patientId?: number;
+  /** @nullable */
+  bloodType?: string | null;
+  /** @nullable */
+  emergencyContactName?: string | null;
+  /** @nullable */
+  emergencyContactPhone?: string | null;
+  medicalHistory?: unknown | null;
+  allergies?: unknown | null;
+  currentMedications?: unknown | null;
+  insuranceInfo?: unknown | null;
+  /** @nullable */
+  completedAt?: string | null;
+  updatedAt?: string;
+}
+
+export type IntakeFormInputMedicalHistory = { [key: string]: unknown };
+
+export type IntakeFormInputAllergies = { [key: string]: unknown };
+
+export type IntakeFormInputCurrentMedications = { [key: string]: unknown };
+
+export type IntakeFormInputInsuranceInfo = { [key: string]: unknown };
+
+export interface IntakeFormInput {
+  bloodType?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  medicalHistory?: IntakeFormInputMedicalHistory;
+  allergies?: IntakeFormInputAllergies;
+  currentMedications?: IntakeFormInputCurrentMedications;
+  insuranceInfo?: IntakeFormInputInsuranceInfo;
+}
+
+export type VolUserProfileRole = typeof VolUserProfileRole[keyof typeof VolUserProfileRole];
+
+
+export const VolUserProfileRole = {
+  volunteer: 'volunteer',
+  coordinator: 'coordinator',
+} as const;
+
+export type VolUserProfileStatus = typeof VolUserProfileStatus[keyof typeof VolUserProfileStatus];
+
+
+export const VolUserProfileStatus = {
+  pending: 'pending',
+  active: 'active',
+  inactive: 'inactive',
+} as const;
+
+export interface VolUserProfile {
+  id: number;
+  email: string;
+  name: string;
+  role: VolUserProfileRole;
+  status: VolUserProfileStatus;
+  /** @nullable */
+  avatarInitials?: string | null;
+  /** @nullable */
+  skills?: string | null;
+  /** @nullable */
+  availability?: string | null;
+  /** @nullable */
+  bio?: string | null;
+}
+
+export interface VolAuthResponse {
+  token: string;
+  user: VolUserProfile;
+}
+
+export interface VolCompleteTrainingInput {
+  score?: number;
+}
+
+export interface VolWaiverSignInput {
+  signatureData?: string;
+}
+
+export interface VolRegisterInput {
+  email: string;
+  password: string;
+  name: string;
+  phone?: string;
+  skills?: string;
+  availability?: string;
+  consentedToTerms: boolean;
+}
+
+export interface VolLoginInput {
+  email: string;
+  password: string;
+}
+
+export type VolTrainingResourceResourceType = typeof VolTrainingResourceResourceType[keyof typeof VolTrainingResourceResourceType];
+
+
+export const VolTrainingResourceResourceType = {
+  video: 'video',
+  document: 'document',
+  quiz: 'quiz',
+  article: 'article',
+} as const;
+
+export interface VolTrainingResource {
+  id: number;
+  title: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  content?: string | null;
+  resourceType: VolTrainingResourceResourceType;
+  /** @nullable */
+  url?: string | null;
+  /** @nullable */
+  durationMinutes?: number | null;
+  required: boolean;
+  sortOrder: number;
+  completed?: boolean;
+  /** @nullable */
+  completedAt?: string | null;
+  createdAt: string;
+}
+
+export interface VolWaiver {
+  id: number;
+  title: string;
+  content: string;
+  version: string;
+  required: boolean;
+  signed?: boolean;
+  /** @nullable */
+  signedAt?: string | null;
+  createdAt: string;
+}
+
+export type VolServiceHoursEntryStatus = typeof VolServiceHoursEntryStatus[keyof typeof VolServiceHoursEntryStatus];
+
+
+export const VolServiceHoursEntryStatus = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+
+export interface VolServiceHoursEntry {
+  id: number;
+  volunteerId: number;
+  /** @nullable */
+  eventId?: number | null;
+  description: string;
+  hours: number;
+  serviceDate: string;
+  status: VolServiceHoursEntryStatus;
+  /** @nullable */
+  reviewNotes?: string | null;
+  createdAt: string;
+}
+
+export interface VolHoursInput {
+  description: string;
+  hours: number;
+  serviceDate: string;
+  eventId?: number;
+}
+
+export type VolHoursUpdateInputStatus = typeof VolHoursUpdateInputStatus[keyof typeof VolHoursUpdateInputStatus];
+
+
+export const VolHoursUpdateInputStatus = {
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+
+export interface VolHoursUpdateInput {
+  status: VolHoursUpdateInputStatus;
+  reviewNotes?: string;
+}
+
+export type VolEventStatus = typeof VolEventStatus[keyof typeof VolEventStatus];
+
+
+export const VolEventStatus = {
+  upcoming: 'upcoming',
+  active: 'active',
+  completed: 'completed',
+  cancelled: 'cancelled',
+} as const;
+
+export interface VolEvent {
+  id: number;
+  title: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  location?: string | null;
+  startTime: string;
+  endTime: string;
+  /** @nullable */
+  maxVolunteers?: number | null;
+  /** @nullable */
+  coordinatorId?: number | null;
+  status: VolEventStatus;
+  /** @nullable */
+  category?: string | null;
+  registered?: boolean;
+  createdAt: string;
+}
+
+export interface VolEventInput {
+  title: string;
+  description?: string;
+  location?: string;
+  startTime: string;
+  endTime: string;
+  maxVolunteers?: number;
+  category?: string;
+}
+
+export interface VolMessage {
+  id: number;
+  senderId: number;
+  recipientId: number;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export interface VolMessageInput {
+  recipientId: number;
+  content: string;
+}
+
+export interface VolImpactMetrics {
+  approvedHours: number;
+  eventsAttended: number;
+  activeVolunteers?: number;
+}
+
 export type GetMessagesParams = {
 withUserId?: number;
 };
+
+export type VolLogout200 = { [key: string]: unknown };
 

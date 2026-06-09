@@ -306,3 +306,318 @@ export const GetAuditLogsResponseItem = zod.object({
 export const GetAuditLogsResponse = zod.array(GetAuditLogsResponseItem)
 
 
+/**
+ * @summary Get patient intake form
+ */
+export const GetIntakeFormResponse = zod.object({
+  "id": zod.number().optional(),
+  "patientId": zod.number().optional(),
+  "bloodType": zod.string().nullish(),
+  "emergencyContactName": zod.string().nullish(),
+  "emergencyContactPhone": zod.string().nullish(),
+  "medicalHistory": zod.unknown().nullish(),
+  "allergies": zod.unknown().nullish(),
+  "currentMedications": zod.unknown().nullish(),
+  "insuranceInfo": zod.unknown().nullish(),
+  "completedAt": zod.string().nullish(),
+  "updatedAt": zod.string().optional()
+})
+
+
+/**
+ * @summary Create or update intake form
+ */
+export const SubmitIntakeFormBody = zod.object({
+  "bloodType": zod.string().optional(),
+  "emergencyContactName": zod.string().optional(),
+  "emergencyContactPhone": zod.string().optional(),
+  "medicalHistory": zod.object({
+
+}).passthrough().optional(),
+  "allergies": zod.object({
+
+}).passthrough().optional(),
+  "currentMedications": zod.object({
+
+}).passthrough().optional(),
+  "insuranceInfo": zod.object({
+
+}).passthrough().optional()
+})
+
+
+/**
+ * @summary Register as volunteer
+ */
+export const VolRegisterBody = zod.object({
+  "email": zod.string(),
+  "password": zod.string(),
+  "name": zod.string(),
+  "phone": zod.string().optional(),
+  "skills": zod.string().optional(),
+  "availability": zod.string().optional(),
+  "consentedToTerms": zod.boolean()
+})
+
+
+/**
+ * @summary Login to volunteer portal
+ */
+export const VolLoginBody = zod.object({
+  "email": zod.string(),
+  "password": zod.string()
+})
+
+export const VolLoginResponse = zod.object({
+  "token": zod.string(),
+  "user": zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['volunteer', 'coordinator']),
+  "status": zod.enum(['pending', 'active', 'inactive']),
+  "avatarInitials": zod.string().nullish(),
+  "skills": zod.string().nullish(),
+  "availability": zod.string().nullish(),
+  "bio": zod.string().nullish()
+})
+})
+
+
+/**
+ * @summary Logout from volunteer portal
+ */
+export const VolLogoutResponse = zod.object({
+
+}).passthrough()
+
+
+/**
+ * @summary Get current volunteer profile
+ */
+export const VolMeResponse = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['volunteer', 'coordinator']),
+  "status": zod.enum(['pending', 'active', 'inactive']),
+  "avatarInitials": zod.string().nullish(),
+  "skills": zod.string().nullish(),
+  "availability": zod.string().nullish(),
+  "bio": zod.string().nullish()
+})
+
+
+/**
+ * @summary List training resources with completion status
+ */
+export const GetVolTrainingResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "content": zod.string().nullish(),
+  "resourceType": zod.enum(['video', 'document', 'quiz', 'article']),
+  "url": zod.string().nullish(),
+  "durationMinutes": zod.number().nullish(),
+  "required": zod.boolean(),
+  "sortOrder": zod.number(),
+  "completed": zod.boolean().optional(),
+  "completedAt": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const GetVolTrainingResponse = zod.array(GetVolTrainingResponseItem)
+
+
+/**
+ * @summary Mark training resource as complete
+ */
+export const CompleteVolTrainingParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const CompleteVolTrainingBody = zod.object({
+  "score": zod.number().optional()
+})
+
+
+/**
+ * @summary List waivers with signature status
+ */
+export const GetVolWaiversResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "content": zod.string(),
+  "version": zod.string(),
+  "required": zod.boolean(),
+  "signed": zod.boolean().optional(),
+  "signedAt": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const GetVolWaiversResponse = zod.array(GetVolWaiversResponseItem)
+
+
+/**
+ * @summary Sign a waiver
+ */
+export const SignVolWaiverParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const SignVolWaiverBody = zod.object({
+  "signatureData": zod.string().optional()
+})
+
+
+/**
+ * @summary List service hours
+ */
+export const GetVolHoursResponseItem = zod.object({
+  "id": zod.number(),
+  "volunteerId": zod.number(),
+  "eventId": zod.number().nullish(),
+  "description": zod.string(),
+  "hours": zod.number(),
+  "serviceDate": zod.string(),
+  "status": zod.enum(['pending', 'approved', 'rejected']),
+  "reviewNotes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const GetVolHoursResponse = zod.array(GetVolHoursResponseItem)
+
+
+/**
+ * @summary Log service hours
+ */
+export const LogVolHoursBody = zod.object({
+  "description": zod.string(),
+  "hours": zod.number(),
+  "serviceDate": zod.string(),
+  "eventId": zod.number().optional()
+})
+
+
+/**
+ * @summary Approve or reject service hours (coordinator only)
+ */
+export const ReviewVolHoursParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const ReviewVolHoursBody = zod.object({
+  "status": zod.enum(['approved', 'rejected']),
+  "reviewNotes": zod.string().optional()
+})
+
+export const ReviewVolHoursResponse = zod.object({
+  "id": zod.number(),
+  "volunteerId": zod.number(),
+  "eventId": zod.number().nullish(),
+  "description": zod.string(),
+  "hours": zod.number(),
+  "serviceDate": zod.string(),
+  "status": zod.enum(['pending', 'approved', 'rejected']),
+  "reviewNotes": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary List volunteer events
+ */
+export const GetVolEventsResponseItem = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "location": zod.string().nullish(),
+  "startTime": zod.string(),
+  "endTime": zod.string(),
+  "maxVolunteers": zod.number().nullish(),
+  "coordinatorId": zod.number().nullish(),
+  "status": zod.enum(['upcoming', 'active', 'completed', 'cancelled']),
+  "category": zod.string().nullish(),
+  "registered": zod.boolean().optional(),
+  "createdAt": zod.string()
+})
+export const GetVolEventsResponse = zod.array(GetVolEventsResponseItem)
+
+
+/**
+ * @summary Create event (coordinator only)
+ */
+export const CreateVolEventBody = zod.object({
+  "title": zod.string(),
+  "description": zod.string().optional(),
+  "location": zod.string().optional(),
+  "startTime": zod.string(),
+  "endTime": zod.string(),
+  "maxVolunteers": zod.number().optional(),
+  "category": zod.string().optional()
+})
+
+
+/**
+ * @summary Register for event
+ */
+export const RegisterVolEventParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Cancel event registration
+ */
+export const CancelVolEventRegistrationParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary Get messages
+ */
+export const GetVolMessagesResponseItem = zod.object({
+  "id": zod.number(),
+  "senderId": zod.number(),
+  "recipientId": zod.number(),
+  "content": zod.string(),
+  "isRead": zod.boolean(),
+  "createdAt": zod.string()
+})
+export const GetVolMessagesResponse = zod.array(GetVolMessagesResponseItem)
+
+
+/**
+ * @summary Send a message
+ */
+export const SendVolMessageBody = zod.object({
+  "recipientId": zod.number(),
+  "content": zod.string()
+})
+
+
+/**
+ * @summary Get impact metrics
+ */
+export const GetVolImpactResponse = zod.object({
+  "approvedHours": zod.number(),
+  "eventsAttended": zod.number(),
+  "activeVolunteers": zod.number().optional()
+})
+
+
+/**
+ * @summary List coordinators (for messaging)
+ */
+export const GetVolCoordinatorsResponseItem = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['volunteer', 'coordinator']),
+  "status": zod.enum(['pending', 'active', 'inactive']),
+  "avatarInitials": zod.string().nullish(),
+  "skills": zod.string().nullish(),
+  "availability": zod.string().nullish(),
+  "bio": zod.string().nullish()
+})
+export const GetVolCoordinatorsResponse = zod.array(GetVolCoordinatorsResponseItem)
+
+

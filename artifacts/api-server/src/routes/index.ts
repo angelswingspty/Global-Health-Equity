@@ -11,6 +11,9 @@ import telehealthMessagesRouter from "./telehealth-messages";
 import telehealthDocumentsRouter from "./telehealth-documents";
 import telehealthPrescriptionsRouter from "./telehealth-prescriptions";
 import telehealthAdminRouter from "./telehealth-admin";
+import patientIntakeRouter from "./patient-intake";
+import volunteerAuthRouter from "./volunteer-auth";
+import volunteerPortalRouter from "./volunteer-portal";
 
 const router: IRouter = Router();
 
@@ -26,5 +29,8 @@ router.use(telehealthMessagesRouter);
 router.use(telehealthDocumentsRouter);
 router.use(telehealthPrescriptionsRouter);
 router.use(telehealthAdminRouter);
+router.use(patientIntakeRouter);
+router.use(volunteerAuthRouter);
+router.use(volunteerPortalRouter);
 
 export default router;

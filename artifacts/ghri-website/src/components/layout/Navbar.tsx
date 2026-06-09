@@ -14,6 +14,7 @@ export function Navbar() {
     { href: "/about", label: "About" },
     { href: "/programs", label: "Programs" },
     { href: "/telehealth", label: "Telehealth" },
+    { href: "/volunteers", label: "Volunteers" },
     { href: "/get-involved", label: "Get Involved" },
     { href: "/blog", label: "Blog" },
     { href: "/contact", label: "Contact" },

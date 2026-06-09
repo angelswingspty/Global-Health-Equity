@@ -19,6 +19,14 @@ tags:
   - name: telehealth-documents
   - name: telehealth-prescriptions
   - name: telehealth-admin
+  - name: patient-intake
+  - name: volunteer-auth
+  - name: volunteer-training
+  - name: volunteer-waivers
+  - name: volunteer-hours
+  - name: volunteer-events
+  - name: volunteer-messages
+  - name: volunteer-impact
 paths:
   /healthz:
     get:
@@ -583,6 +591,366 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
 
+  /telehealth/intake:
+    get:
+      operationId: getIntakeForm
+      tags: [patient-intake]
+      summary: Get patient intake form
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Intake form or null
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeFormResponse"
+    post:
+      operationId: submitIntakeForm
+      tags: [patient-intake]
+      summary: Create or update intake form
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IntakeFormInput"
+      responses:
+        "201":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/IntakeFormResponse"
+
+  /volunteers/auth/register:
+    post:
+      operationId: volRegister
+      tags: [volunteer-auth]
+      summary: Register as volunteer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolRegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolAuthResponse"
+
+  /volunteers/auth/login:
+    post:
+      operationId: volLogin
+      tags: [volunteer-auth]
+      summary: Login to volunteer portal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolLoginInput"
+      responses:
+        "200":
+          description: Login success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolAuthResponse"
+
+  /volunteers/auth/logout:
+    post:
+      operationId: volLogout
+      tags: [volunteer-auth]
+      summary: Logout from volunteer portal
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                type: object
+
+  /volunteers/auth/me:
+    get:
+      operationId: volMe
+      tags: [volunteer-auth]
+      summary: Get current volunteer profile
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolUserProfile"
+
+  /volunteers/training:
+    get:
+      operationId: getVolTraining
+      tags: [volunteer-training]
+      summary: List training resources with completion status
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Training resources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VolTrainingResource"
+
+  /volunteers/training/{id}/complete:
+    post:
+      operationId: completeVolTraining
+      tags: [volunteer-training]
+      summary: Mark training resource as complete
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolCompleteTrainingInput"
+      responses:
+        "200":
+          description: Completed
+
+  /volunteers/waivers:
+    get:
+      operationId: getVolWaivers
+      tags: [volunteer-waivers]
+      summary: List waivers with signature status
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Waivers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VolWaiver"
+
+  /volunteers/waivers/{id}/sign:
+    post:
+      operationId: signVolWaiver
+      tags: [volunteer-waivers]
+      summary: Sign a waiver
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolWaiverSignInput"
+      responses:
+        "200":
+          description: Signed
+
+  /volunteers/hours:
+    get:
+      operationId: getVolHours
+      tags: [volunteer-hours]
+      summary: List service hours
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Hours
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VolServiceHoursEntry"
+    post:
+      operationId: logVolHours
+      tags: [volunteer-hours]
+      summary: Log service hours
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolHoursInput"
+      responses:
+        "201":
+          description: Logged
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolServiceHoursEntry"
+
+  /volunteers/hours/{id}:
+    patch:
+      operationId: reviewVolHours
+      tags: [volunteer-hours]
+      summary: Approve or reject service hours (coordinator only)
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolHoursUpdateInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolServiceHoursEntry"
+
+  /volunteers/events:
+    get:
+      operationId: getVolEvents
+      tags: [volunteer-events]
+      summary: List volunteer events
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VolEvent"
+    post:
+      operationId: createVolEvent
+      tags: [volunteer-events]
+      summary: Create event (coordinator only)
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolEventInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolEvent"
+
+  /volunteers/events/{id}/register:
+    post:
+      operationId: registerVolEvent
+      tags: [volunteer-events]
+      summary: Register for event
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Registered
+    delete:
+      operationId: cancelVolEventRegistration
+      tags: [volunteer-events]
+      summary: Cancel event registration
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Cancelled
+
+  /volunteers/messages:
+    get:
+      operationId: getVolMessages
+      tags: [volunteer-messages]
+      summary: Get messages
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VolMessage"
+    post:
+      operationId: sendVolMessage
+      tags: [volunteer-messages]
+      summary: Send a message
+      security: [{bearerAuth: []}]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolMessageInput"
+      responses:
+        "201":
+          description: Sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolMessage"
+
+  /volunteers/impact:
+    get:
+      operationId: getVolImpact
+      tags: [volunteer-impact]
+      summary: Get impact metrics
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Metrics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolImpactMetrics"
+
+  /volunteers/coordinators:
+    get:
+      operationId: getVolCoordinators
+      tags: [volunteer-messages]
+      summary: List coordinators (for messaging)
+      security: [{bearerAuth: []}]
+      responses:
+        "200":
+          description: Coordinators
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VolUserProfile"
+
 components:
   securitySchemes:
     bearerAuth:
@@ -985,3 +1353,305 @@ components:
           type: ["string", "null"]
         createdAt:
           type: string
+
+    IntakeFormResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        patientId:
+          type: integer
+        bloodType:
+          type: ["string", "null"]
+        emergencyContactName:
+          type: ["string", "null"]
+        emergencyContactPhone:
+          type: ["string", "null"]
+        medicalHistory:
+          nullable: true
+        allergies:
+          nullable: true
+        currentMedications:
+          nullable: true
+        insuranceInfo:
+          nullable: true
+        completedAt:
+          type: ["string", "null"]
+        updatedAt:
+          type: string
+
+    IntakeFormInput:
+      type: object
+      properties:
+        bloodType:
+          type: string
+        emergencyContactName:
+          type: string
+        emergencyContactPhone:
+          type: string
+        medicalHistory:
+          type: object
+        allergies:
+          type: object
+        currentMedications:
+          type: object
+        insuranceInfo:
+          type: object
+
+    VolUserProfile:
+      type: object
+      required: [id, email, name, role, status]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [volunteer, coordinator]
+        status:
+          type: string
+          enum: [pending, active, inactive]
+        avatarInitials:
+          type: ["string", "null"]
+        skills:
+          type: ["string", "null"]
+        availability:
+          type: ["string", "null"]
+        bio:
+          type: ["string", "null"]
+
+    VolAuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/VolUserProfile"
+
+    VolCompleteTrainingInput:
+      type: object
+      properties:
+        score:
+          type: integer
+
+    VolWaiverSignInput:
+      type: object
+      properties:
+        signatureData:
+          type: string
+
+    VolRegisterInput:
+      type: object
+      required: [email, password, name, consentedToTerms]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+        name:
+          type: string
+        phone:
+          type: string
+        skills:
+          type: string
+        availability:
+          type: string
+        consentedToTerms:
+          type: boolean
+
+    VolLoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+
+    VolTrainingResource:
+      type: object
+      required: [id, title, resourceType, required, sortOrder, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        content:
+          type: ["string", "null"]
+        resourceType:
+          type: string
+          enum: [video, document, quiz, article]
+        url:
+          type: ["string", "null"]
+        durationMinutes:
+          type: ["integer", "null"]
+        required:
+          type: boolean
+        sortOrder:
+          type: integer
+        completed:
+          type: boolean
+        completedAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    VolWaiver:
+      type: object
+      required: [id, title, content, version, required, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        content:
+          type: string
+        version:
+          type: string
+        required:
+          type: boolean
+        signed:
+          type: boolean
+        signedAt:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    VolServiceHoursEntry:
+      type: object
+      required: [id, volunteerId, description, hours, serviceDate, status, createdAt]
+      properties:
+        id:
+          type: integer
+        volunteerId:
+          type: integer
+        eventId:
+          type: ["integer", "null"]
+        description:
+          type: string
+        hours:
+          type: number
+        serviceDate:
+          type: string
+        status:
+          type: string
+          enum: [pending, approved, rejected]
+        reviewNotes:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    VolHoursInput:
+      type: object
+      required: [description, hours, serviceDate]
+      properties:
+        description:
+          type: string
+        hours:
+          type: number
+        serviceDate:
+          type: string
+        eventId:
+          type: integer
+
+    VolHoursUpdateInput:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [approved, rejected]
+        reviewNotes:
+          type: string
+
+    VolEvent:
+      type: object
+      required: [id, title, startTime, endTime, status, createdAt]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        startTime:
+          type: string
+        endTime:
+          type: string
+        maxVolunteers:
+          type: ["integer", "null"]
+        coordinatorId:
+          type: ["integer", "null"]
+        status:
+          type: string
+          enum: [upcoming, active, completed, cancelled]
+        category:
+          type: ["string", "null"]
+        registered:
+          type: boolean
+        createdAt:
+          type: string
+
+    VolEventInput:
+      type: object
+      required: [title, startTime, endTime]
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        location:
+          type: string
+        startTime:
+          type: string
+        endTime:
+          type: string
+        maxVolunteers:
+          type: integer
+        category:
+          type: string
+
+    VolMessage:
+      type: object
+      required: [id, senderId, recipientId, content, isRead, createdAt]
+      properties:
+        id:
+          type: integer
+        senderId:
+          type: integer
+        recipientId:
+          type: integer
+        content:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+
+    VolMessageInput:
+      type: object
+      required: [recipientId, content]
+      properties:
+        recipientId:
+          type: integer
+        content:
+          type: string
+
+    VolImpactMetrics:
+      type: object
+      required: [approvedHours, eventsAttended]
+      properties:
+        approvedHours:
+          type: number
+        eventsAttended:
+          type: integer
+        activeVolunteers:
+          type: integer

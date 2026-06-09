@@ -31,6 +31,8 @@ import type {
   GetMessagesParams,
   HealthStatus,
   ImpactStats,
+  IntakeFormInput,
+  IntakeFormResponse,
   MedicalDocument,
   MessageCreateInput,
   MessageWithUsers,
@@ -45,6 +47,23 @@ import type {
   TelehealthLoginSuccess,
   TelehealthRegisterInput,
   TelehealthUserProfile,
+  VolAuthResponse,
+  VolCompleteTrainingInput,
+  VolEvent,
+  VolEventInput,
+  VolHoursInput,
+  VolHoursUpdateInput,
+  VolImpactMetrics,
+  VolLoginInput,
+  VolLogout200,
+  VolMessage,
+  VolMessageInput,
+  VolRegisterInput,
+  VolServiceHoursEntry,
+  VolTrainingResource,
+  VolUserProfile,
+  VolWaiver,
+  VolWaiverSignInput,
   VolunteerInput
 } from './api.schemas';
 
@@ -1686,6 +1705,1551 @@ export function useGetAuditLogs<TData = Awaited<ReturnType<typeof getAuditLogs>>
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetAuditLogsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetIntakeFormUrl = () => {
+
+
+
+
+  return `/api/telehealth/intake`
+}
+
+/**
+ * @summary Get patient intake form
+ */
+export const getIntakeForm = async ( options?: RequestInit): Promise<IntakeFormResponse> => {
+
+  return customFetch<IntakeFormResponse>(getGetIntakeFormUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetIntakeFormQueryKey = () => {
+    return [
+    `/api/telehealth/intake`
+    ] as const;
+    }
+
+
+export const getGetIntakeFormQueryOptions = <TData = Awaited<ReturnType<typeof getIntakeForm>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIntakeForm>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetIntakeFormQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getIntakeForm>>> = ({ signal }) => getIntakeForm({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getIntakeForm>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetIntakeFormQueryResult = NonNullable<Awaited<ReturnType<typeof getIntakeForm>>>
+export type GetIntakeFormQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get patient intake form
+ */
+
+export function useGetIntakeForm<TData = Awaited<ReturnType<typeof getIntakeForm>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getIntakeForm>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetIntakeFormQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSubmitIntakeFormUrl = () => {
+
+
+
+
+  return `/api/telehealth/intake`
+}
+
+/**
+ * @summary Create or update intake form
+ */
+export const submitIntakeForm = async (intakeFormInput: IntakeFormInput, options?: RequestInit): Promise<IntakeFormResponse> => {
+
+  return customFetch<IntakeFormResponse>(getSubmitIntakeFormUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      intakeFormInput,)
+  }
+);}
+
+
+
+
+export const getSubmitIntakeFormMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitIntakeForm>>, TError,{data: BodyType<IntakeFormInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof submitIntakeForm>>, TError,{data: BodyType<IntakeFormInput>}, TContext> => {
+
+const mutationKey = ['submitIntakeForm'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof submitIntakeForm>>, {data: BodyType<IntakeFormInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  submitIntakeForm(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubmitIntakeFormMutationResult = NonNullable<Awaited<ReturnType<typeof submitIntakeForm>>>
+    export type SubmitIntakeFormMutationBody = BodyType<IntakeFormInput>
+    export type SubmitIntakeFormMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create or update intake form
+ */
+export const useSubmitIntakeForm = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitIntakeForm>>, TError,{data: BodyType<IntakeFormInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof submitIntakeForm>>,
+        TError,
+        {data: BodyType<IntakeFormInput>},
+        TContext
+      > => {
+      return useMutation(getSubmitIntakeFormMutationOptions(options));
+    }
+
+export const getVolRegisterUrl = () => {
+
+
+
+
+  return `/api/volunteers/auth/register`
+}
+
+/**
+ * @summary Register as volunteer
+ */
+export const volRegister = async (volRegisterInput: VolRegisterInput, options?: RequestInit): Promise<VolAuthResponse> => {
+
+  return customFetch<VolAuthResponse>(getVolRegisterUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      volRegisterInput,)
+  }
+);}
+
+
+
+
+export const getVolRegisterMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof volRegister>>, TError,{data: BodyType<VolRegisterInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof volRegister>>, TError,{data: BodyType<VolRegisterInput>}, TContext> => {
+
+const mutationKey = ['volRegister'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof volRegister>>, {data: BodyType<VolRegisterInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  volRegister(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VolRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof volRegister>>>
+    export type VolRegisterMutationBody = BodyType<VolRegisterInput>
+    export type VolRegisterMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Register as volunteer
+ */
+export const useVolRegister = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof volRegister>>, TError,{data: BodyType<VolRegisterInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof volRegister>>,
+        TError,
+        {data: BodyType<VolRegisterInput>},
+        TContext
+      > => {
+      return useMutation(getVolRegisterMutationOptions(options));
+    }
+
+export const getVolLoginUrl = () => {
+
+
+
+
+  return `/api/volunteers/auth/login`
+}
+
+/**
+ * @summary Login to volunteer portal
+ */
+export const volLogin = async (volLoginInput: VolLoginInput, options?: RequestInit): Promise<VolAuthResponse> => {
+
+  return customFetch<VolAuthResponse>(getVolLoginUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      volLoginInput,)
+  }
+);}
+
+
+
+
+export const getVolLoginMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof volLogin>>, TError,{data: BodyType<VolLoginInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof volLogin>>, TError,{data: BodyType<VolLoginInput>}, TContext> => {
+
+const mutationKey = ['volLogin'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof volLogin>>, {data: BodyType<VolLoginInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  volLogin(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VolLoginMutationResult = NonNullable<Awaited<ReturnType<typeof volLogin>>>
+    export type VolLoginMutationBody = BodyType<VolLoginInput>
+    export type VolLoginMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Login to volunteer portal
+ */
+export const useVolLogin = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof volLogin>>, TError,{data: BodyType<VolLoginInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof volLogin>>,
+        TError,
+        {data: BodyType<VolLoginInput>},
+        TContext
+      > => {
+      return useMutation(getVolLoginMutationOptions(options));
+    }
+
+export const getVolLogoutUrl = () => {
+
+
+
+
+  return `/api/volunteers/auth/logout`
+}
+
+/**
+ * @summary Logout from volunteer portal
+ */
+export const volLogout = async ( options?: RequestInit): Promise<VolLogout200> => {
+
+  return customFetch<VolLogout200>(getVolLogoutUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getVolLogoutMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof volLogout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof volLogout>>, TError,void, TContext> => {
+
+const mutationKey = ['volLogout'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof volLogout>>, void> = () => {
+
+
+          return  volLogout(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type VolLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof volLogout>>>
+
+    export type VolLogoutMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Logout from volunteer portal
+ */
+export const useVolLogout = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof volLogout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof volLogout>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getVolLogoutMutationOptions(options));
+    }
+
+export const getVolMeUrl = () => {
+
+
+
+
+  return `/api/volunteers/auth/me`
+}
+
+/**
+ * @summary Get current volunteer profile
+ */
+export const volMe = async ( options?: RequestInit): Promise<VolUserProfile> => {
+
+  return customFetch<VolUserProfile>(getVolMeUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getVolMeQueryKey = () => {
+    return [
+    `/api/volunteers/auth/me`
+    ] as const;
+    }
+
+
+export const getVolMeQueryOptions = <TData = Awaited<ReturnType<typeof volMe>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof volMe>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getVolMeQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof volMe>>> = ({ signal }) => volMe({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof volMe>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type VolMeQueryResult = NonNullable<Awaited<ReturnType<typeof volMe>>>
+export type VolMeQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get current volunteer profile
+ */
+
+export function useVolMe<TData = Awaited<ReturnType<typeof volMe>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof volMe>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getVolMeQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetVolTrainingUrl = () => {
+
+
+
+
+  return `/api/volunteers/training`
+}
+
+/**
+ * @summary List training resources with completion status
+ */
+export const getVolTraining = async ( options?: RequestInit): Promise<VolTrainingResource[]> => {
+
+  return customFetch<VolTrainingResource[]>(getGetVolTrainingUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVolTrainingQueryKey = () => {
+    return [
+    `/api/volunteers/training`
+    ] as const;
+    }
+
+
+export const getGetVolTrainingQueryOptions = <TData = Awaited<ReturnType<typeof getVolTraining>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolTraining>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVolTrainingQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVolTraining>>> = ({ signal }) => getVolTraining({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVolTraining>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVolTrainingQueryResult = NonNullable<Awaited<ReturnType<typeof getVolTraining>>>
+export type GetVolTrainingQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List training resources with completion status
+ */
+
+export function useGetVolTraining<TData = Awaited<ReturnType<typeof getVolTraining>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolTraining>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVolTrainingQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCompleteVolTrainingUrl = (id: number,) => {
+
+
+
+
+  return `/api/volunteers/training/${id}/complete`
+}
+
+/**
+ * @summary Mark training resource as complete
+ */
+export const completeVolTraining = async (id: number,
+    volCompleteTrainingInput?: VolCompleteTrainingInput, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getCompleteVolTrainingUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      volCompleteTrainingInput,)
+  }
+);}
+
+
+
+
+export const getCompleteVolTrainingMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeVolTraining>>, TError,{id: number;data?: BodyType<VolCompleteTrainingInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeVolTraining>>, TError,{id: number;data?: BodyType<VolCompleteTrainingInput>}, TContext> => {
+
+const mutationKey = ['completeVolTraining'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeVolTraining>>, {id: number;data?: BodyType<VolCompleteTrainingInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  completeVolTraining(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteVolTrainingMutationResult = NonNullable<Awaited<ReturnType<typeof completeVolTraining>>>
+    export type CompleteVolTrainingMutationBody = BodyType<VolCompleteTrainingInput> | undefined
+    export type CompleteVolTrainingMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Mark training resource as complete
+ */
+export const useCompleteVolTraining = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeVolTraining>>, TError,{id: number;data?: BodyType<VolCompleteTrainingInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof completeVolTraining>>,
+        TError,
+        {id: number;data?: BodyType<VolCompleteTrainingInput>},
+        TContext
+      > => {
+      return useMutation(getCompleteVolTrainingMutationOptions(options));
+    }
+
+export const getGetVolWaiversUrl = () => {
+
+
+
+
+  return `/api/volunteers/waivers`
+}
+
+/**
+ * @summary List waivers with signature status
+ */
+export const getVolWaivers = async ( options?: RequestInit): Promise<VolWaiver[]> => {
+
+  return customFetch<VolWaiver[]>(getGetVolWaiversUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVolWaiversQueryKey = () => {
+    return [
+    `/api/volunteers/waivers`
+    ] as const;
+    }
+
+
+export const getGetVolWaiversQueryOptions = <TData = Awaited<ReturnType<typeof getVolWaivers>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolWaivers>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVolWaiversQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVolWaivers>>> = ({ signal }) => getVolWaivers({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVolWaivers>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVolWaiversQueryResult = NonNullable<Awaited<ReturnType<typeof getVolWaivers>>>
+export type GetVolWaiversQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List waivers with signature status
+ */
+
+export function useGetVolWaivers<TData = Awaited<ReturnType<typeof getVolWaivers>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolWaivers>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVolWaiversQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSignVolWaiverUrl = (id: number,) => {
+
+
+
+
+  return `/api/volunteers/waivers/${id}/sign`
+}
+
+/**
+ * @summary Sign a waiver
+ */
+export const signVolWaiver = async (id: number,
+    volWaiverSignInput?: VolWaiverSignInput, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getSignVolWaiverUrl(id),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      volWaiverSignInput,)
+  }
+);}
+
+
+
+
+export const getSignVolWaiverMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof signVolWaiver>>, TError,{id: number;data?: BodyType<VolWaiverSignInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof signVolWaiver>>, TError,{id: number;data?: BodyType<VolWaiverSignInput>}, TContext> => {
+
+const mutationKey = ['signVolWaiver'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof signVolWaiver>>, {id: number;data?: BodyType<VolWaiverSignInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  signVolWaiver(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SignVolWaiverMutationResult = NonNullable<Awaited<ReturnType<typeof signVolWaiver>>>
+    export type SignVolWaiverMutationBody = BodyType<VolWaiverSignInput> | undefined
+    export type SignVolWaiverMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Sign a waiver
+ */
+export const useSignVolWaiver = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof signVolWaiver>>, TError,{id: number;data?: BodyType<VolWaiverSignInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof signVolWaiver>>,
+        TError,
+        {id: number;data?: BodyType<VolWaiverSignInput>},
+        TContext
+      > => {
+      return useMutation(getSignVolWaiverMutationOptions(options));
+    }
+
+export const getGetVolHoursUrl = () => {
+
+
+
+
+  return `/api/volunteers/hours`
+}
+
+/**
+ * @summary List service hours
+ */
+export const getVolHours = async ( options?: RequestInit): Promise<VolServiceHoursEntry[]> => {
+
+  return customFetch<VolServiceHoursEntry[]>(getGetVolHoursUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVolHoursQueryKey = () => {
+    return [
+    `/api/volunteers/hours`
+    ] as const;
+    }
+
+
+export const getGetVolHoursQueryOptions = <TData = Awaited<ReturnType<typeof getVolHours>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolHours>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVolHoursQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVolHours>>> = ({ signal }) => getVolHours({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVolHours>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVolHoursQueryResult = NonNullable<Awaited<ReturnType<typeof getVolHours>>>
+export type GetVolHoursQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List service hours
+ */
+
+export function useGetVolHours<TData = Awaited<ReturnType<typeof getVolHours>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolHours>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVolHoursQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getLogVolHoursUrl = () => {
+
+
+
+
+  return `/api/volunteers/hours`
+}
+
+/**
+ * @summary Log service hours
+ */
+export const logVolHours = async (volHoursInput: VolHoursInput, options?: RequestInit): Promise<VolServiceHoursEntry> => {
+
+  return customFetch<VolServiceHoursEntry>(getLogVolHoursUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      volHoursInput,)
+  }
+);}
+
+
+
+
+export const getLogVolHoursMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logVolHours>>, TError,{data: BodyType<VolHoursInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof logVolHours>>, TError,{data: BodyType<VolHoursInput>}, TContext> => {
+
+const mutationKey = ['logVolHours'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof logVolHours>>, {data: BodyType<VolHoursInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  logVolHours(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type LogVolHoursMutationResult = NonNullable<Awaited<ReturnType<typeof logVolHours>>>
+    export type LogVolHoursMutationBody = BodyType<VolHoursInput>
+    export type LogVolHoursMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Log service hours
+ */
+export const useLogVolHours = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof logVolHours>>, TError,{data: BodyType<VolHoursInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof logVolHours>>,
+        TError,
+        {data: BodyType<VolHoursInput>},
+        TContext
+      > => {
+      return useMutation(getLogVolHoursMutationOptions(options));
+    }
+
+export const getReviewVolHoursUrl = (id: number,) => {
+
+
+
+
+  return `/api/volunteers/hours/${id}`
+}
+
+/**
+ * @summary Approve or reject service hours (coordinator only)
+ */
+export const reviewVolHours = async (id: number,
+    volHoursUpdateInput: VolHoursUpdateInput, options?: RequestInit): Promise<VolServiceHoursEntry> => {
+
+  return customFetch<VolServiceHoursEntry>(getReviewVolHoursUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      volHoursUpdateInput,)
+  }
+);}
+
+
+
+
+export const getReviewVolHoursMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewVolHours>>, TError,{id: number;data: BodyType<VolHoursUpdateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof reviewVolHours>>, TError,{id: number;data: BodyType<VolHoursUpdateInput>}, TContext> => {
+
+const mutationKey = ['reviewVolHours'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof reviewVolHours>>, {id: number;data: BodyType<VolHoursUpdateInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  reviewVolHours(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ReviewVolHoursMutationResult = NonNullable<Awaited<ReturnType<typeof reviewVolHours>>>
+    export type ReviewVolHoursMutationBody = BodyType<VolHoursUpdateInput>
+    export type ReviewVolHoursMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Approve or reject service hours (coordinator only)
+ */
+export const useReviewVolHours = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof reviewVolHours>>, TError,{id: number;data: BodyType<VolHoursUpdateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof reviewVolHours>>,
+        TError,
+        {id: number;data: BodyType<VolHoursUpdateInput>},
+        TContext
+      > => {
+      return useMutation(getReviewVolHoursMutationOptions(options));
+    }
+
+export const getGetVolEventsUrl = () => {
+
+
+
+
+  return `/api/volunteers/events`
+}
+
+/**
+ * @summary List volunteer events
+ */
+export const getVolEvents = async ( options?: RequestInit): Promise<VolEvent[]> => {
+
+  return customFetch<VolEvent[]>(getGetVolEventsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVolEventsQueryKey = () => {
+    return [
+    `/api/volunteers/events`
+    ] as const;
+    }
+
+
+export const getGetVolEventsQueryOptions = <TData = Awaited<ReturnType<typeof getVolEvents>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolEvents>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVolEventsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVolEvents>>> = ({ signal }) => getVolEvents({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVolEvents>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVolEventsQueryResult = NonNullable<Awaited<ReturnType<typeof getVolEvents>>>
+export type GetVolEventsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List volunteer events
+ */
+
+export function useGetVolEvents<TData = Awaited<ReturnType<typeof getVolEvents>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolEvents>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVolEventsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateVolEventUrl = () => {
+
+
+
+
+  return `/api/volunteers/events`
+}
+
+/**
+ * @summary Create event (coordinator only)
+ */
+export const createVolEvent = async (volEventInput: VolEventInput, options?: RequestInit): Promise<VolEvent> => {
+
+  return customFetch<VolEvent>(getCreateVolEventUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      volEventInput,)
+  }
+);}
+
+
+
+
+export const getCreateVolEventMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createVolEvent>>, TError,{data: BodyType<VolEventInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createVolEvent>>, TError,{data: BodyType<VolEventInput>}, TContext> => {
+
+const mutationKey = ['createVolEvent'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createVolEvent>>, {data: BodyType<VolEventInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createVolEvent(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateVolEventMutationResult = NonNullable<Awaited<ReturnType<typeof createVolEvent>>>
+    export type CreateVolEventMutationBody = BodyType<VolEventInput>
+    export type CreateVolEventMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Create event (coordinator only)
+ */
+export const useCreateVolEvent = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createVolEvent>>, TError,{data: BodyType<VolEventInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createVolEvent>>,
+        TError,
+        {data: BodyType<VolEventInput>},
+        TContext
+      > => {
+      return useMutation(getCreateVolEventMutationOptions(options));
+    }
+
+export const getRegisterVolEventUrl = (id: number,) => {
+
+
+
+
+  return `/api/volunteers/events/${id}/register`
+}
+
+/**
+ * @summary Register for event
+ */
+export const registerVolEvent = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getRegisterVolEventUrl(id),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getRegisterVolEventMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerVolEvent>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof registerVolEvent>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['registerVolEvent'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof registerVolEvent>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  registerVolEvent(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RegisterVolEventMutationResult = NonNullable<Awaited<ReturnType<typeof registerVolEvent>>>
+
+    export type RegisterVolEventMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Register for event
+ */
+export const useRegisterVolEvent = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof registerVolEvent>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof registerVolEvent>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getRegisterVolEventMutationOptions(options));
+    }
+
+export const getCancelVolEventRegistrationUrl = (id: number,) => {
+
+
+
+
+  return `/api/volunteers/events/${id}/register`
+}
+
+/**
+ * @summary Cancel event registration
+ */
+export const cancelVolEventRegistration = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getCancelVolEventRegistrationUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getCancelVolEventRegistrationMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelVolEventRegistration>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof cancelVolEventRegistration>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['cancelVolEventRegistration'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelVolEventRegistration>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  cancelVolEventRegistration(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelVolEventRegistrationMutationResult = NonNullable<Awaited<ReturnType<typeof cancelVolEventRegistration>>>
+
+    export type CancelVolEventRegistrationMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Cancel event registration
+ */
+export const useCancelVolEventRegistration = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelVolEventRegistration>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof cancelVolEventRegistration>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getCancelVolEventRegistrationMutationOptions(options));
+    }
+
+export const getGetVolMessagesUrl = () => {
+
+
+
+
+  return `/api/volunteers/messages`
+}
+
+/**
+ * @summary Get messages
+ */
+export const getVolMessages = async ( options?: RequestInit): Promise<VolMessage[]> => {
+
+  return customFetch<VolMessage[]>(getGetVolMessagesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVolMessagesQueryKey = () => {
+    return [
+    `/api/volunteers/messages`
+    ] as const;
+    }
+
+
+export const getGetVolMessagesQueryOptions = <TData = Awaited<ReturnType<typeof getVolMessages>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolMessages>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVolMessagesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVolMessages>>> = ({ signal }) => getVolMessages({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVolMessages>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVolMessagesQueryResult = NonNullable<Awaited<ReturnType<typeof getVolMessages>>>
+export type GetVolMessagesQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get messages
+ */
+
+export function useGetVolMessages<TData = Awaited<ReturnType<typeof getVolMessages>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolMessages>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVolMessagesQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSendVolMessageUrl = () => {
+
+
+
+
+  return `/api/volunteers/messages`
+}
+
+/**
+ * @summary Send a message
+ */
+export const sendVolMessage = async (volMessageInput: VolMessageInput, options?: RequestInit): Promise<VolMessage> => {
+
+  return customFetch<VolMessage>(getSendVolMessageUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      volMessageInput,)
+  }
+);}
+
+
+
+
+export const getSendVolMessageMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendVolMessage>>, TError,{data: BodyType<VolMessageInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendVolMessage>>, TError,{data: BodyType<VolMessageInput>}, TContext> => {
+
+const mutationKey = ['sendVolMessage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendVolMessage>>, {data: BodyType<VolMessageInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  sendVolMessage(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendVolMessageMutationResult = NonNullable<Awaited<ReturnType<typeof sendVolMessage>>>
+    export type SendVolMessageMutationBody = BodyType<VolMessageInput>
+    export type SendVolMessageMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Send a message
+ */
+export const useSendVolMessage = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendVolMessage>>, TError,{data: BodyType<VolMessageInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendVolMessage>>,
+        TError,
+        {data: BodyType<VolMessageInput>},
+        TContext
+      > => {
+      return useMutation(getSendVolMessageMutationOptions(options));
+    }
+
+export const getGetVolImpactUrl = () => {
+
+
+
+
+  return `/api/volunteers/impact`
+}
+
+/**
+ * @summary Get impact metrics
+ */
+export const getVolImpact = async ( options?: RequestInit): Promise<VolImpactMetrics> => {
+
+  return customFetch<VolImpactMetrics>(getGetVolImpactUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVolImpactQueryKey = () => {
+    return [
+    `/api/volunteers/impact`
+    ] as const;
+    }
+
+
+export const getGetVolImpactQueryOptions = <TData = Awaited<ReturnType<typeof getVolImpact>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolImpact>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVolImpactQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVolImpact>>> = ({ signal }) => getVolImpact({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVolImpact>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVolImpactQueryResult = NonNullable<Awaited<ReturnType<typeof getVolImpact>>>
+export type GetVolImpactQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get impact metrics
+ */
+
+export function useGetVolImpact<TData = Awaited<ReturnType<typeof getVolImpact>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolImpact>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVolImpactQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetVolCoordinatorsUrl = () => {
+
+
+
+
+  return `/api/volunteers/coordinators`
+}
+
+/**
+ * @summary List coordinators (for messaging)
+ */
+export const getVolCoordinators = async ( options?: RequestInit): Promise<VolUserProfile[]> => {
+
+  return customFetch<VolUserProfile[]>(getGetVolCoordinatorsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVolCoordinatorsQueryKey = () => {
+    return [
+    `/api/volunteers/coordinators`
+    ] as const;
+    }
+
+
+export const getGetVolCoordinatorsQueryOptions = <TData = Awaited<ReturnType<typeof getVolCoordinators>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolCoordinators>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVolCoordinatorsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVolCoordinators>>> = ({ signal }) => getVolCoordinators({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVolCoordinators>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVolCoordinatorsQueryResult = NonNullable<Awaited<ReturnType<typeof getVolCoordinators>>>
+export type GetVolCoordinatorsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List coordinators (for messaging)
+ */
+
+export function useGetVolCoordinators<TData = Awaited<ReturnType<typeof getVolCoordinators>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolCoordinators>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVolCoordinatorsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 
