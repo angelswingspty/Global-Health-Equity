@@ -9,22 +9,22 @@ servers:
     description: Base API path
 tags:
   - name: health
-    description: Health operations
   - name: contact
-    description: Contact form submissions
   - name: volunteer
-    description: Volunteer applications
   - name: newsletter
-    description: Newsletter subscriptions
   - name: stats
-    description: Impact statistics
+  - name: telehealth-auth
+  - name: telehealth-appointments
+  - name: telehealth-messages
+  - name: telehealth-documents
+  - name: telehealth-prescriptions
+  - name: telehealth-admin
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -37,7 +37,6 @@ paths:
     post:
       operationId: submitContact
       tags: [contact]
-      summary: Submit contact form
       requestBody:
         required: true
         content:
@@ -46,13 +45,13 @@ paths:
               $ref: "#/components/schemas/ContactInput"
       responses:
         "201":
-          description: Contact submitted
+          description: Submitted
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
         "400":
-          description: Validation error
+          description: Error
           content:
             application/json:
               schema:
@@ -62,7 +61,6 @@ paths:
     post:
       operationId: submitVolunteer
       tags: [volunteer]
-      summary: Submit volunteer application
       requestBody:
         required: true
         content:
@@ -71,13 +69,13 @@ paths:
               $ref: "#/components/schemas/VolunteerInput"
       responses:
         "201":
-          description: Application submitted
+          description: Submitted
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
         "400":
-          description: Validation error
+          description: Error
           content:
             application/json:
               schema:
@@ -87,7 +85,6 @@ paths:
     post:
       operationId: subscribeNewsletter
       tags: [newsletter]
-      summary: Subscribe to newsletter
       requestBody:
         required: true
         content:
@@ -102,7 +99,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/SuccessResponse"
         "400":
-          description: Validation error
+          description: Error
           content:
             application/json:
               schema:
@@ -112,10 +109,9 @@ paths:
     get:
       operationId: getStats
       tags: [stats]
-      summary: Get impact statistics
       responses:
         "200":
-          description: Impact statistics
+          description: Stats
           content:
             application/json:
               schema:
@@ -125,10 +121,9 @@ paths:
     get:
       operationId: getBlogPosts
       tags: [stats]
-      summary: Get blog posts
       responses:
         "200":
-          description: List of blog posts
+          description: Blog posts
           content:
             application/json:
               schema:
@@ -136,31 +131,486 @@ paths:
                 items:
                   $ref: "#/components/schemas/BlogPost"
 
+  # ── Telehealth Auth ────────────────────────────────────────────────────────
+
+  /telehealth/auth/register:
+    post:
+      operationId: telehealthRegister
+      tags: [telehealth-auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TelehealthRegisterInput"
+      responses:
+        "201":
+          description: Registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelehealthAuthResponse"
+        "400":
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /telehealth/auth/login:
+    post:
+      operationId: telehealthLogin
+      tags: [telehealth-auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TelehealthLoginInput"
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelehealthLoginSuccess"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /telehealth/auth/mfa/setup:
+    post:
+      operationId: telehealthMfaSetup
+      tags: [telehealth-auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: MFA setup info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MfaSetupResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /telehealth/auth/mfa/verify:
+    post:
+      operationId: telehealthMfaVerify
+      tags: [telehealth-auth]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MfaVerifyInput"
+      responses:
+        "200":
+          description: MFA verified
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelehealthAuthResponse"
+        "401":
+          description: Invalid code
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /telehealth/auth/me:
+    get:
+      operationId: telehealthMe
+      tags: [telehealth-auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TelehealthUserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /telehealth/auth/logout:
+    post:
+      operationId: telehealthLogout
+      tags: [telehealth-auth]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SuccessResponse"
+
+  # ── Appointments ───────────────────────────────────────────────────────────
+
+  /telehealth/appointments:
+    get:
+      operationId: getAppointments
+      tags: [telehealth-appointments]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Appointments
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AppointmentWithUsers"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createAppointment
+      tags: [telehealth-appointments]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentCreateInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentWithUsers"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /telehealth/appointments/{id}:
+    patch:
+      operationId: updateAppointment
+      tags: [telehealth-appointments]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentUpdateInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppointmentWithUsers"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ── Messages ───────────────────────────────────────────────────────────────
+
+  /telehealth/messages:
+    get:
+      operationId: getMessages
+      tags: [telehealth-messages]
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: withUserId
+          in: query
+          required: false
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Messages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MessageWithUsers"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: sendMessage
+      tags: [telehealth-messages]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MessageCreateInput"
+      responses:
+        "201":
+          description: Sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageWithUsers"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ── Documents ──────────────────────────────────────────────────────────────
+
+  /telehealth/documents:
+    get:
+      operationId: getDocuments
+      tags: [telehealth-documents]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Documents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MedicalDocument"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: uploadDocument
+      tags: [telehealth-documents]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DocumentUploadInput"
+      responses:
+        "201":
+          description: Uploaded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MedicalDocument"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ── Prescriptions ──────────────────────────────────────────────────────────
+
+  /telehealth/prescriptions:
+    get:
+      operationId: getPrescriptions
+      tags: [telehealth-prescriptions]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Prescriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PrescriptionWithUsers"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createPrescription
+      tags: [telehealth-prescriptions]
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrescriptionCreateInput"
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrescriptionWithUsers"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Providers only
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  # ── Providers & Patients ───────────────────────────────────────────────────
+
+  /telehealth/providers:
+    get:
+      operationId: getProviders
+      tags: [telehealth-appointments]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Providers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TelehealthUserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /telehealth/patients:
+    get:
+      operationId: getPatients
+      tags: [telehealth-admin]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Patients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TelehealthUserProfile"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Providers only
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /telehealth/audit-logs:
+    get:
+      operationId: getAuditLogs
+      tags: [telehealth-admin]
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Audit logs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AuditLogEntry"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
   schemas:
     HealthStatus:
       type: object
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
     SuccessResponse:
       type: object
       properties:
         message:
           type: string
-      required:
-        - message
+      required: [message]
 
     ErrorResponse:
       type: object
       properties:
         error:
           type: string
-      required:
-        - error
+      required: [error]
 
     ContactInput:
       type: object
@@ -244,3 +694,294 @@ components:
           type: string
         imageUrl:
           type: ["string", "null"]
+
+    # ── Telehealth Schemas ───────────────────────────────────────────────────
+
+    TelehealthRegisterInput:
+      type: object
+      required: [email, password, name, role, consentedToTerms]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 8
+        name:
+          type: string
+          minLength: 1
+        role:
+          type: string
+          enum: [patient, provider]
+        specialty:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        consentedToTerms:
+          type: boolean
+
+    TelehealthLoginInput:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+
+    TelehealthLoginSuccess:
+      type: object
+      required: [token, user, mfaRequired]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/TelehealthUserProfile"
+        mfaRequired:
+          type: boolean
+        mfaSetupRequired:
+          type: boolean
+
+    TelehealthAuthResponse:
+      type: object
+      required: [token, user]
+      properties:
+        token:
+          type: string
+        user:
+          $ref: "#/components/schemas/TelehealthUserProfile"
+
+    TelehealthUserProfile:
+      type: object
+      required: [id, email, name, role, mfaEnabled]
+      properties:
+        id:
+          type: integer
+        email:
+          type: string
+        name:
+          type: string
+        role:
+          type: string
+          enum: [patient, provider]
+        specialty:
+          type: ["string", "null"]
+        phone:
+          type: ["string", "null"]
+        mfaEnabled:
+          type: boolean
+
+    MfaSetupResponse:
+      type: object
+      required: [secret, otpauthUrl, backupCodes]
+      properties:
+        secret:
+          type: string
+        otpauthUrl:
+          type: string
+        backupCodes:
+          type: array
+          items:
+            type: string
+
+    MfaVerifyInput:
+      type: object
+      required: [code]
+      properties:
+        code:
+          type: string
+        action:
+          type: string
+          enum: [enable, login]
+
+    AppointmentWithUsers:
+      type: object
+      required: [id, patientId, providerId, scheduledAt, status, type, createdAt]
+      properties:
+        id:
+          type: integer
+        patientId:
+          type: integer
+        providerId:
+          type: integer
+        scheduledAt:
+          type: string
+        status:
+          type: string
+          enum: [scheduled, confirmed, in_progress, completed, cancelled]
+        type:
+          type: string
+          enum: [video, phone, follow_up]
+        notes:
+          type: ["string", "null"]
+        videoRoomUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+        patientName:
+          type: ["string", "null"]
+        providerName:
+          type: ["string", "null"]
+        providerSpecialty:
+          type: ["string", "null"]
+
+    AppointmentCreateInput:
+      type: object
+      required: [providerId, scheduledAt, type]
+      properties:
+        providerId:
+          type: integer
+        scheduledAt:
+          type: string
+        type:
+          type: string
+          enum: [video, phone, follow_up]
+        notes:
+          type: ["string", "null"]
+
+    AppointmentUpdateInput:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [scheduled, confirmed, in_progress, completed, cancelled]
+        notes:
+          type: ["string", "null"]
+        videoRoomUrl:
+          type: ["string", "null"]
+
+    MessageWithUsers:
+      type: object
+      required: [id, senderId, recipientId, content, isRead, createdAt]
+      properties:
+        id:
+          type: integer
+        senderId:
+          type: integer
+        recipientId:
+          type: integer
+        content:
+          type: string
+        isRead:
+          type: boolean
+        createdAt:
+          type: string
+        senderName:
+          type: ["string", "null"]
+        recipientName:
+          type: ["string", "null"]
+
+    MessageCreateInput:
+      type: object
+      required: [recipientId, content]
+      properties:
+        recipientId:
+          type: integer
+        content:
+          type: string
+          minLength: 1
+
+    MedicalDocument:
+      type: object
+      required: [id, patientId, uploadedById, filename, documentType, createdAt]
+      properties:
+        id:
+          type: integer
+        patientId:
+          type: integer
+        uploadedById:
+          type: integer
+        filename:
+          type: string
+        documentType:
+          type: string
+          enum: [lab_result, imaging, referral, insurance, consent, other]
+        fileSizeBytes:
+          type: ["integer", "null"]
+        createdAt:
+          type: string
+        uploaderName:
+          type: ["string", "null"]
+
+    DocumentUploadInput:
+      type: object
+      required: [filename, documentType]
+      properties:
+        filename:
+          type: string
+        documentType:
+          type: string
+          enum: [lab_result, imaging, referral, insurance, consent, other]
+        patientId:
+          type: ["integer", "null"]
+        fileSizeBytes:
+          type: ["integer", "null"]
+
+    PrescriptionWithUsers:
+      type: object
+      required: [id, patientId, providerId, medication, dosage, frequency, status, prescribedAt]
+      properties:
+        id:
+          type: integer
+        patientId:
+          type: integer
+        providerId:
+          type: integer
+        medication:
+          type: string
+        dosage:
+          type: string
+        frequency:
+          type: string
+        instructions:
+          type: ["string", "null"]
+        refills:
+          type: integer
+        status:
+          type: string
+          enum: [active, completed, cancelled]
+        prescribedAt:
+          type: string
+        patientName:
+          type: ["string", "null"]
+        providerName:
+          type: ["string", "null"]
+
+    PrescriptionCreateInput:
+      type: object
+      required: [patientId, medication, dosage, frequency]
+      properties:
+        patientId:
+          type: integer
+        medication:
+          type: string
+        dosage:
+          type: string
+        frequency:
+          type: string
+        instructions:
+          type: ["string", "null"]
+        refills:
+          type: integer
+
+    AuditLogEntry:
+      type: object
+      required: [id, action, createdAt]
+      properties:
+        id:
+          type: integer
+        userId:
+          type: ["integer", "null"]
+        action:
+          type: string
+        resourceType:
+          type: ["string", "null"]
+        resourceId:
+          type: ["string", "null"]
+        ipAddress:
+          type: ["string", "null"]
+        details:
+          type: ["string", "null"]
+        createdAt:
+          type: string

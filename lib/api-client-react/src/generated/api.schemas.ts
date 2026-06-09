@@ -70,3 +70,279 @@ export interface BlogPost {
   imageUrl?: string | null;
 }
 
+export type TelehealthRegisterInputRole = typeof TelehealthRegisterInputRole[keyof typeof TelehealthRegisterInputRole];
+
+
+export const TelehealthRegisterInputRole = {
+  patient: 'patient',
+  provider: 'provider',
+} as const;
+
+export interface TelehealthRegisterInput {
+  email: string;
+  /** @minLength 8 */
+  password: string;
+  /** @minLength 1 */
+  name: string;
+  role: TelehealthRegisterInputRole;
+  /** @nullable */
+  specialty?: string | null;
+  /** @nullable */
+  phone?: string | null;
+  consentedToTerms: boolean;
+}
+
+export interface TelehealthLoginInput {
+  email: string;
+  password: string;
+}
+
+export type TelehealthUserProfileRole = typeof TelehealthUserProfileRole[keyof typeof TelehealthUserProfileRole];
+
+
+export const TelehealthUserProfileRole = {
+  patient: 'patient',
+  provider: 'provider',
+} as const;
+
+export interface TelehealthUserProfile {
+  id: number;
+  email: string;
+  name: string;
+  role: TelehealthUserProfileRole;
+  /** @nullable */
+  specialty?: string | null;
+  /** @nullable */
+  phone?: string | null;
+  mfaEnabled: boolean;
+}
+
+export interface TelehealthLoginSuccess {
+  token: string;
+  user: TelehealthUserProfile;
+  mfaRequired: boolean;
+  mfaSetupRequired?: boolean;
+}
+
+export interface TelehealthAuthResponse {
+  token: string;
+  user: TelehealthUserProfile;
+}
+
+export interface MfaSetupResponse {
+  secret: string;
+  otpauthUrl: string;
+  backupCodes: string[];
+}
+
+export type MfaVerifyInputAction = typeof MfaVerifyInputAction[keyof typeof MfaVerifyInputAction];
+
+
+export const MfaVerifyInputAction = {
+  enable: 'enable',
+  login: 'login',
+} as const;
+
+export interface MfaVerifyInput {
+  code: string;
+  action?: MfaVerifyInputAction;
+}
+
+export type AppointmentWithUsersStatus = typeof AppointmentWithUsersStatus[keyof typeof AppointmentWithUsersStatus];
+
+
+export const AppointmentWithUsersStatus = {
+  scheduled: 'scheduled',
+  confirmed: 'confirmed',
+  in_progress: 'in_progress',
+  completed: 'completed',
+  cancelled: 'cancelled',
+} as const;
+
+export type AppointmentWithUsersType = typeof AppointmentWithUsersType[keyof typeof AppointmentWithUsersType];
+
+
+export const AppointmentWithUsersType = {
+  video: 'video',
+  phone: 'phone',
+  follow_up: 'follow_up',
+} as const;
+
+export interface AppointmentWithUsers {
+  id: number;
+  patientId: number;
+  providerId: number;
+  scheduledAt: string;
+  status: AppointmentWithUsersStatus;
+  type: AppointmentWithUsersType;
+  /** @nullable */
+  notes?: string | null;
+  /** @nullable */
+  videoRoomUrl?: string | null;
+  createdAt: string;
+  /** @nullable */
+  patientName?: string | null;
+  /** @nullable */
+  providerName?: string | null;
+  /** @nullable */
+  providerSpecialty?: string | null;
+}
+
+export type AppointmentCreateInputType = typeof AppointmentCreateInputType[keyof typeof AppointmentCreateInputType];
+
+
+export const AppointmentCreateInputType = {
+  video: 'video',
+  phone: 'phone',
+  follow_up: 'follow_up',
+} as const;
+
+export interface AppointmentCreateInput {
+  providerId: number;
+  scheduledAt: string;
+  type: AppointmentCreateInputType;
+  /** @nullable */
+  notes?: string | null;
+}
+
+export type AppointmentUpdateInputStatus = typeof AppointmentUpdateInputStatus[keyof typeof AppointmentUpdateInputStatus];
+
+
+export const AppointmentUpdateInputStatus = {
+  scheduled: 'scheduled',
+  confirmed: 'confirmed',
+  in_progress: 'in_progress',
+  completed: 'completed',
+  cancelled: 'cancelled',
+} as const;
+
+export interface AppointmentUpdateInput {
+  status?: AppointmentUpdateInputStatus;
+  /** @nullable */
+  notes?: string | null;
+  /** @nullable */
+  videoRoomUrl?: string | null;
+}
+
+export interface MessageWithUsers {
+  id: number;
+  senderId: number;
+  recipientId: number;
+  content: string;
+  isRead: boolean;
+  createdAt: string;
+  /** @nullable */
+  senderName?: string | null;
+  /** @nullable */
+  recipientName?: string | null;
+}
+
+export interface MessageCreateInput {
+  recipientId: number;
+  /** @minLength 1 */
+  content: string;
+}
+
+export type MedicalDocumentDocumentType = typeof MedicalDocumentDocumentType[keyof typeof MedicalDocumentDocumentType];
+
+
+export const MedicalDocumentDocumentType = {
+  lab_result: 'lab_result',
+  imaging: 'imaging',
+  referral: 'referral',
+  insurance: 'insurance',
+  consent: 'consent',
+  other: 'other',
+} as const;
+
+export interface MedicalDocument {
+  id: number;
+  patientId: number;
+  uploadedById: number;
+  filename: string;
+  documentType: MedicalDocumentDocumentType;
+  /** @nullable */
+  fileSizeBytes?: number | null;
+  createdAt: string;
+  /** @nullable */
+  uploaderName?: string | null;
+}
+
+export type DocumentUploadInputDocumentType = typeof DocumentUploadInputDocumentType[keyof typeof DocumentUploadInputDocumentType];
+
+
+export const DocumentUploadInputDocumentType = {
+  lab_result: 'lab_result',
+  imaging: 'imaging',
+  referral: 'referral',
+  insurance: 'insurance',
+  consent: 'consent',
+  other: 'other',
+} as const;
+
+export interface DocumentUploadInput {
+  filename: string;
+  documentType: DocumentUploadInputDocumentType;
+  /** @nullable */
+  patientId?: number | null;
+  /** @nullable */
+  fileSizeBytes?: number | null;
+}
+
+export type PrescriptionWithUsersStatus = typeof PrescriptionWithUsersStatus[keyof typeof PrescriptionWithUsersStatus];
+
+
+export const PrescriptionWithUsersStatus = {
+  active: 'active',
+  completed: 'completed',
+  cancelled: 'cancelled',
+} as const;
+
+export interface PrescriptionWithUsers {
+  id: number;
+  patientId: number;
+  providerId: number;
+  medication: string;
+  dosage: string;
+  frequency: string;
+  /** @nullable */
+  instructions?: string | null;
+  refills?: number;
+  status: PrescriptionWithUsersStatus;
+  prescribedAt: string;
+  /** @nullable */
+  patientName?: string | null;
+  /** @nullable */
+  providerName?: string | null;
+}
+
+export interface PrescriptionCreateInput {
+  patientId: number;
+  medication: string;
+  dosage: string;
+  frequency: string;
+  /** @nullable */
+  instructions?: string | null;
+  refills?: number;
+}
+
+export interface AuditLogEntry {
+  id: number;
+  /** @nullable */
+  userId?: number | null;
+  action: string;
+  /** @nullable */
+  resourceType?: string | null;
+  /** @nullable */
+  resourceId?: string | null;
+  /** @nullable */
+  ipAddress?: string | null;
+  /** @nullable */
+  details?: string | null;
+  createdAt: string;
+}
+
+export type GetMessagesParams = {
+withUserId?: number;
+};
+

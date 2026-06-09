@@ -20,13 +20,31 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AppointmentCreateInput,
+  AppointmentUpdateInput,
+  AppointmentWithUsers,
+  AuditLogEntry,
   BlogPost,
   ContactInput,
+  DocumentUploadInput,
   ErrorResponse,
+  GetMessagesParams,
   HealthStatus,
   ImpactStats,
+  MedicalDocument,
+  MessageCreateInput,
+  MessageWithUsers,
+  MfaSetupResponse,
+  MfaVerifyInput,
   NewsletterInput,
+  PrescriptionCreateInput,
+  PrescriptionWithUsers,
   SuccessResponse,
+  TelehealthAuthResponse,
+  TelehealthLoginInput,
+  TelehealthLoginSuccess,
+  TelehealthRegisterInput,
+  TelehealthUserProfile,
   VolunteerInput
 } from './api.schemas';
 
@@ -51,7 +69,6 @@ export const getHealthCheckUrl = () => {
 }
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const healthCheck = async ( options?: RequestInit): Promise<HealthStatus> => {
@@ -128,9 +145,6 @@ export const getSubmitContactUrl = () => {
   return `/api/contact`
 }
 
-/**
- * @summary Submit contact form
- */
 export const submitContact = async (contactInput: ContactInput, options?: RequestInit): Promise<SuccessResponse> => {
 
   return customFetch<SuccessResponse>(getSubmitContactUrl(),
@@ -177,10 +191,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type SubmitContactMutationBody = BodyType<ContactInput>
     export type SubmitContactMutationError = ErrorType<ErrorResponse>
 
-    /**
- * @summary Submit contact form
- */
-export const useSubmitContact = <TError = ErrorType<ErrorResponse>,
+    export const useSubmitContact = <TError = ErrorType<ErrorResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitContact>>, TError,{data: BodyType<ContactInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof submitContact>>,
@@ -199,9 +210,6 @@ export const getSubmitVolunteerUrl = () => {
   return `/api/volunteer`
 }
 
-/**
- * @summary Submit volunteer application
- */
 export const submitVolunteer = async (volunteerInput: VolunteerInput, options?: RequestInit): Promise<SuccessResponse> => {
 
   return customFetch<SuccessResponse>(getSubmitVolunteerUrl(),
@@ -248,10 +256,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type SubmitVolunteerMutationBody = BodyType<VolunteerInput>
     export type SubmitVolunteerMutationError = ErrorType<ErrorResponse>
 
-    /**
- * @summary Submit volunteer application
- */
-export const useSubmitVolunteer = <TError = ErrorType<ErrorResponse>,
+    export const useSubmitVolunteer = <TError = ErrorType<ErrorResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof submitVolunteer>>, TError,{data: BodyType<VolunteerInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof submitVolunteer>>,
@@ -270,9 +275,6 @@ export const getSubscribeNewsletterUrl = () => {
   return `/api/newsletter`
 }
 
-/**
- * @summary Subscribe to newsletter
- */
 export const subscribeNewsletter = async (newsletterInput: NewsletterInput, options?: RequestInit): Promise<SuccessResponse> => {
 
   return customFetch<SuccessResponse>(getSubscribeNewsletterUrl(),
@@ -319,10 +321,7 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
     export type SubscribeNewsletterMutationBody = BodyType<NewsletterInput>
     export type SubscribeNewsletterMutationError = ErrorType<ErrorResponse>
 
-    /**
- * @summary Subscribe to newsletter
- */
-export const useSubscribeNewsletter = <TError = ErrorType<ErrorResponse>,
+    export const useSubscribeNewsletter = <TError = ErrorType<ErrorResponse>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof subscribeNewsletter>>, TError,{data: BodyType<NewsletterInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof subscribeNewsletter>>,
@@ -341,9 +340,6 @@ export const getGetStatsUrl = () => {
   return `/api/stats`
 }
 
-/**
- * @summary Get impact statistics
- */
 export const getStats = async ( options?: RequestInit): Promise<ImpactStats> => {
 
   return customFetch<ImpactStats>(getGetStatsUrl(),
@@ -388,9 +384,6 @@ export type GetStatsQueryResult = NonNullable<Awaited<ReturnType<typeof getStats
 export type GetStatsQueryError = ErrorType<unknown>
 
 
-/**
- * @summary Get impact statistics
- */
 
 export function useGetStats<TData = Awaited<ReturnType<typeof getStats>>, TError = ErrorType<unknown>>(
   options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getStats>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
@@ -418,9 +411,6 @@ export const getGetBlogPostsUrl = () => {
   return `/api/blog`
 }
 
-/**
- * @summary Get blog posts
- */
 export const getBlogPosts = async ( options?: RequestInit): Promise<BlogPost[]> => {
 
   return customFetch<BlogPost[]>(getGetBlogPostsUrl(),
@@ -465,9 +455,6 @@ export type GetBlogPostsQueryResult = NonNullable<Awaited<ReturnType<typeof getB
 export type GetBlogPostsQueryError = ErrorType<unknown>
 
 
-/**
- * @summary Get blog posts
- */
 
 export function useGetBlogPosts<TData = Awaited<ReturnType<typeof getBlogPosts>>, TError = ErrorType<unknown>>(
   options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getBlogPosts>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
@@ -475,6 +462,1230 @@ export function useGetBlogPosts<TData = Awaited<ReturnType<typeof getBlogPosts>>
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getGetBlogPostsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getTelehealthRegisterUrl = () => {
+
+
+
+
+  return `/api/telehealth/auth/register`
+}
+
+export const telehealthRegister = async (telehealthRegisterInput: TelehealthRegisterInput, options?: RequestInit): Promise<TelehealthAuthResponse> => {
+
+  return customFetch<TelehealthAuthResponse>(getTelehealthRegisterUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      telehealthRegisterInput,)
+  }
+);}
+
+
+
+
+export const getTelehealthRegisterMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthRegister>>, TError,{data: BodyType<TelehealthRegisterInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof telehealthRegister>>, TError,{data: BodyType<TelehealthRegisterInput>}, TContext> => {
+
+const mutationKey = ['telehealthRegister'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof telehealthRegister>>, {data: BodyType<TelehealthRegisterInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  telehealthRegister(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TelehealthRegisterMutationResult = NonNullable<Awaited<ReturnType<typeof telehealthRegister>>>
+    export type TelehealthRegisterMutationBody = BodyType<TelehealthRegisterInput>
+    export type TelehealthRegisterMutationError = ErrorType<ErrorResponse>
+
+    export const useTelehealthRegister = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthRegister>>, TError,{data: BodyType<TelehealthRegisterInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof telehealthRegister>>,
+        TError,
+        {data: BodyType<TelehealthRegisterInput>},
+        TContext
+      > => {
+      return useMutation(getTelehealthRegisterMutationOptions(options));
+    }
+
+export const getTelehealthLoginUrl = () => {
+
+
+
+
+  return `/api/telehealth/auth/login`
+}
+
+export const telehealthLogin = async (telehealthLoginInput: TelehealthLoginInput, options?: RequestInit): Promise<TelehealthLoginSuccess> => {
+
+  return customFetch<TelehealthLoginSuccess>(getTelehealthLoginUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      telehealthLoginInput,)
+  }
+);}
+
+
+
+
+export const getTelehealthLoginMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthLogin>>, TError,{data: BodyType<TelehealthLoginInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof telehealthLogin>>, TError,{data: BodyType<TelehealthLoginInput>}, TContext> => {
+
+const mutationKey = ['telehealthLogin'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof telehealthLogin>>, {data: BodyType<TelehealthLoginInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  telehealthLogin(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TelehealthLoginMutationResult = NonNullable<Awaited<ReturnType<typeof telehealthLogin>>>
+    export type TelehealthLoginMutationBody = BodyType<TelehealthLoginInput>
+    export type TelehealthLoginMutationError = ErrorType<ErrorResponse>
+
+    export const useTelehealthLogin = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthLogin>>, TError,{data: BodyType<TelehealthLoginInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof telehealthLogin>>,
+        TError,
+        {data: BodyType<TelehealthLoginInput>},
+        TContext
+      > => {
+      return useMutation(getTelehealthLoginMutationOptions(options));
+    }
+
+export const getTelehealthMfaSetupUrl = () => {
+
+
+
+
+  return `/api/telehealth/auth/mfa/setup`
+}
+
+export const telehealthMfaSetup = async ( options?: RequestInit): Promise<MfaSetupResponse> => {
+
+  return customFetch<MfaSetupResponse>(getTelehealthMfaSetupUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getTelehealthMfaSetupMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthMfaSetup>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof telehealthMfaSetup>>, TError,void, TContext> => {
+
+const mutationKey = ['telehealthMfaSetup'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof telehealthMfaSetup>>, void> = () => {
+
+
+          return  telehealthMfaSetup(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TelehealthMfaSetupMutationResult = NonNullable<Awaited<ReturnType<typeof telehealthMfaSetup>>>
+
+    export type TelehealthMfaSetupMutationError = ErrorType<ErrorResponse>
+
+    export const useTelehealthMfaSetup = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthMfaSetup>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof telehealthMfaSetup>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getTelehealthMfaSetupMutationOptions(options));
+    }
+
+export const getTelehealthMfaVerifyUrl = () => {
+
+
+
+
+  return `/api/telehealth/auth/mfa/verify`
+}
+
+export const telehealthMfaVerify = async (mfaVerifyInput: MfaVerifyInput, options?: RequestInit): Promise<TelehealthAuthResponse> => {
+
+  return customFetch<TelehealthAuthResponse>(getTelehealthMfaVerifyUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      mfaVerifyInput,)
+  }
+);}
+
+
+
+
+export const getTelehealthMfaVerifyMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthMfaVerify>>, TError,{data: BodyType<MfaVerifyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof telehealthMfaVerify>>, TError,{data: BodyType<MfaVerifyInput>}, TContext> => {
+
+const mutationKey = ['telehealthMfaVerify'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof telehealthMfaVerify>>, {data: BodyType<MfaVerifyInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  telehealthMfaVerify(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TelehealthMfaVerifyMutationResult = NonNullable<Awaited<ReturnType<typeof telehealthMfaVerify>>>
+    export type TelehealthMfaVerifyMutationBody = BodyType<MfaVerifyInput>
+    export type TelehealthMfaVerifyMutationError = ErrorType<ErrorResponse>
+
+    export const useTelehealthMfaVerify = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthMfaVerify>>, TError,{data: BodyType<MfaVerifyInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof telehealthMfaVerify>>,
+        TError,
+        {data: BodyType<MfaVerifyInput>},
+        TContext
+      > => {
+      return useMutation(getTelehealthMfaVerifyMutationOptions(options));
+    }
+
+export const getTelehealthMeUrl = () => {
+
+
+
+
+  return `/api/telehealth/auth/me`
+}
+
+export const telehealthMe = async ( options?: RequestInit): Promise<TelehealthUserProfile> => {
+
+  return customFetch<TelehealthUserProfile>(getTelehealthMeUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getTelehealthMeQueryKey = () => {
+    return [
+    `/api/telehealth/auth/me`
+    ] as const;
+    }
+
+
+export const getTelehealthMeQueryOptions = <TData = Awaited<ReturnType<typeof telehealthMe>>, TError = ErrorType<ErrorResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof telehealthMe>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getTelehealthMeQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof telehealthMe>>> = ({ signal }) => telehealthMe({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof telehealthMe>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type TelehealthMeQueryResult = NonNullable<Awaited<ReturnType<typeof telehealthMe>>>
+export type TelehealthMeQueryError = ErrorType<ErrorResponse>
+
+
+
+export function useTelehealthMe<TData = Awaited<ReturnType<typeof telehealthMe>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof telehealthMe>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getTelehealthMeQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getTelehealthLogoutUrl = () => {
+
+
+
+
+  return `/api/telehealth/auth/logout`
+}
+
+export const telehealthLogout = async ( options?: RequestInit): Promise<SuccessResponse> => {
+
+  return customFetch<SuccessResponse>(getTelehealthLogoutUrl(),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+export const getTelehealthLogoutMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthLogout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof telehealthLogout>>, TError,void, TContext> => {
+
+const mutationKey = ['telehealthLogout'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof telehealthLogout>>, void> = () => {
+
+
+          return  telehealthLogout(requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type TelehealthLogoutMutationResult = NonNullable<Awaited<ReturnType<typeof telehealthLogout>>>
+
+    export type TelehealthLogoutMutationError = ErrorType<unknown>
+
+    export const useTelehealthLogout = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof telehealthLogout>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof telehealthLogout>>,
+        TError,
+        void,
+        TContext
+      > => {
+      return useMutation(getTelehealthLogoutMutationOptions(options));
+    }
+
+export const getGetAppointmentsUrl = () => {
+
+
+
+
+  return `/api/telehealth/appointments`
+}
+
+export const getAppointments = async ( options?: RequestInit): Promise<AppointmentWithUsers[]> => {
+
+  return customFetch<AppointmentWithUsers[]>(getGetAppointmentsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAppointmentsQueryKey = () => {
+    return [
+    `/api/telehealth/appointments`
+    ] as const;
+    }
+
+
+export const getGetAppointmentsQueryOptions = <TData = Awaited<ReturnType<typeof getAppointments>>, TError = ErrorType<ErrorResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAppointments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAppointmentsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAppointments>>> = ({ signal }) => getAppointments({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAppointments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAppointmentsQueryResult = NonNullable<Awaited<ReturnType<typeof getAppointments>>>
+export type GetAppointmentsQueryError = ErrorType<ErrorResponse>
+
+
+
+export function useGetAppointments<TData = Awaited<ReturnType<typeof getAppointments>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAppointments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAppointmentsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreateAppointmentUrl = () => {
+
+
+
+
+  return `/api/telehealth/appointments`
+}
+
+export const createAppointment = async (appointmentCreateInput: AppointmentCreateInput, options?: RequestInit): Promise<AppointmentWithUsers> => {
+
+  return customFetch<AppointmentWithUsers>(getCreateAppointmentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      appointmentCreateInput,)
+  }
+);}
+
+
+
+
+export const getCreateAppointmentMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAppointment>>, TError,{data: BodyType<AppointmentCreateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createAppointment>>, TError,{data: BodyType<AppointmentCreateInput>}, TContext> => {
+
+const mutationKey = ['createAppointment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createAppointment>>, {data: BodyType<AppointmentCreateInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createAppointment(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateAppointmentMutationResult = NonNullable<Awaited<ReturnType<typeof createAppointment>>>
+    export type CreateAppointmentMutationBody = BodyType<AppointmentCreateInput>
+    export type CreateAppointmentMutationError = ErrorType<ErrorResponse>
+
+    export const useCreateAppointment = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createAppointment>>, TError,{data: BodyType<AppointmentCreateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createAppointment>>,
+        TError,
+        {data: BodyType<AppointmentCreateInput>},
+        TContext
+      > => {
+      return useMutation(getCreateAppointmentMutationOptions(options));
+    }
+
+export const getUpdateAppointmentUrl = (id: number,) => {
+
+
+
+
+  return `/api/telehealth/appointments/${id}`
+}
+
+export const updateAppointment = async (id: number,
+    appointmentUpdateInput: AppointmentUpdateInput, options?: RequestInit): Promise<AppointmentWithUsers> => {
+
+  return customFetch<AppointmentWithUsers>(getUpdateAppointmentUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      appointmentUpdateInput,)
+  }
+);}
+
+
+
+
+export const getUpdateAppointmentMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAppointment>>, TError,{id: number;data: BodyType<AppointmentUpdateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateAppointment>>, TError,{id: number;data: BodyType<AppointmentUpdateInput>}, TContext> => {
+
+const mutationKey = ['updateAppointment'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateAppointment>>, {id: number;data: BodyType<AppointmentUpdateInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateAppointment(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateAppointmentMutationResult = NonNullable<Awaited<ReturnType<typeof updateAppointment>>>
+    export type UpdateAppointmentMutationBody = BodyType<AppointmentUpdateInput>
+    export type UpdateAppointmentMutationError = ErrorType<ErrorResponse>
+
+    export const useUpdateAppointment = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateAppointment>>, TError,{id: number;data: BodyType<AppointmentUpdateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateAppointment>>,
+        TError,
+        {id: number;data: BodyType<AppointmentUpdateInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateAppointmentMutationOptions(options));
+    }
+
+export const getGetMessagesUrl = (params?: GetMessagesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/telehealth/messages?${stringifiedParams}` : `/api/telehealth/messages`
+}
+
+export const getMessages = async (params?: GetMessagesParams, options?: RequestInit): Promise<MessageWithUsers[]> => {
+
+  return customFetch<MessageWithUsers[]>(getGetMessagesUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetMessagesQueryKey = (params?: GetMessagesParams,) => {
+    return [
+    `/api/telehealth/messages`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetMessagesQueryOptions = <TData = Awaited<ReturnType<typeof getMessages>>, TError = ErrorType<ErrorResponse>>(params?: GetMessagesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMessages>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMessagesQueryKey(params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMessages>>> = ({ signal }) => getMessages(params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMessages>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetMessagesQueryResult = NonNullable<Awaited<ReturnType<typeof getMessages>>>
+export type GetMessagesQueryError = ErrorType<ErrorResponse>
+
+
+
+export function useGetMessages<TData = Awaited<ReturnType<typeof getMessages>>, TError = ErrorType<ErrorResponse>>(
+ params?: GetMessagesParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getMessages>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetMessagesQueryOptions(params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getSendMessageUrl = () => {
+
+
+
+
+  return `/api/telehealth/messages`
+}
+
+export const sendMessage = async (messageCreateInput: MessageCreateInput, options?: RequestInit): Promise<MessageWithUsers> => {
+
+  return customFetch<MessageWithUsers>(getSendMessageUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      messageCreateInput,)
+  }
+);}
+
+
+
+
+export const getSendMessageMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendMessage>>, TError,{data: BodyType<MessageCreateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendMessage>>, TError,{data: BodyType<MessageCreateInput>}, TContext> => {
+
+const mutationKey = ['sendMessage'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendMessage>>, {data: BodyType<MessageCreateInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  sendMessage(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendMessageMutationResult = NonNullable<Awaited<ReturnType<typeof sendMessage>>>
+    export type SendMessageMutationBody = BodyType<MessageCreateInput>
+    export type SendMessageMutationError = ErrorType<ErrorResponse>
+
+    export const useSendMessage = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendMessage>>, TError,{data: BodyType<MessageCreateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof sendMessage>>,
+        TError,
+        {data: BodyType<MessageCreateInput>},
+        TContext
+      > => {
+      return useMutation(getSendMessageMutationOptions(options));
+    }
+
+export const getGetDocumentsUrl = () => {
+
+
+
+
+  return `/api/telehealth/documents`
+}
+
+export const getDocuments = async ( options?: RequestInit): Promise<MedicalDocument[]> => {
+
+  return customFetch<MedicalDocument[]>(getGetDocumentsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetDocumentsQueryKey = () => {
+    return [
+    `/api/telehealth/documents`
+    ] as const;
+    }
+
+
+export const getGetDocumentsQueryOptions = <TData = Awaited<ReturnType<typeof getDocuments>>, TError = ErrorType<ErrorResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDocuments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDocumentsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDocuments>>> = ({ signal }) => getDocuments({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDocuments>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetDocumentsQueryResult = NonNullable<Awaited<ReturnType<typeof getDocuments>>>
+export type GetDocumentsQueryError = ErrorType<ErrorResponse>
+
+
+
+export function useGetDocuments<TData = Awaited<ReturnType<typeof getDocuments>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getDocuments>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetDocumentsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUploadDocumentUrl = () => {
+
+
+
+
+  return `/api/telehealth/documents`
+}
+
+export const uploadDocument = async (documentUploadInput: DocumentUploadInput, options?: RequestInit): Promise<MedicalDocument> => {
+
+  return customFetch<MedicalDocument>(getUploadDocumentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      documentUploadInput,)
+  }
+);}
+
+
+
+
+export const getUploadDocumentMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDocument>>, TError,{data: BodyType<DocumentUploadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof uploadDocument>>, TError,{data: BodyType<DocumentUploadInput>}, TContext> => {
+
+const mutationKey = ['uploadDocument'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadDocument>>, {data: BodyType<DocumentUploadInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  uploadDocument(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UploadDocumentMutationResult = NonNullable<Awaited<ReturnType<typeof uploadDocument>>>
+    export type UploadDocumentMutationBody = BodyType<DocumentUploadInput>
+    export type UploadDocumentMutationError = ErrorType<ErrorResponse>
+
+    export const useUploadDocument = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDocument>>, TError,{data: BodyType<DocumentUploadInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof uploadDocument>>,
+        TError,
+        {data: BodyType<DocumentUploadInput>},
+        TContext
+      > => {
+      return useMutation(getUploadDocumentMutationOptions(options));
+    }
+
+export const getGetPrescriptionsUrl = () => {
+
+
+
+
+  return `/api/telehealth/prescriptions`
+}
+
+export const getPrescriptions = async ( options?: RequestInit): Promise<PrescriptionWithUsers[]> => {
+
+  return customFetch<PrescriptionWithUsers[]>(getGetPrescriptionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPrescriptionsQueryKey = () => {
+    return [
+    `/api/telehealth/prescriptions`
+    ] as const;
+    }
+
+
+export const getGetPrescriptionsQueryOptions = <TData = Awaited<ReturnType<typeof getPrescriptions>>, TError = ErrorType<ErrorResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPrescriptions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPrescriptionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPrescriptions>>> = ({ signal }) => getPrescriptions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPrescriptions>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPrescriptionsQueryResult = NonNullable<Awaited<ReturnType<typeof getPrescriptions>>>
+export type GetPrescriptionsQueryError = ErrorType<ErrorResponse>
+
+
+
+export function useGetPrescriptions<TData = Awaited<ReturnType<typeof getPrescriptions>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPrescriptions>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPrescriptionsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getCreatePrescriptionUrl = () => {
+
+
+
+
+  return `/api/telehealth/prescriptions`
+}
+
+export const createPrescription = async (prescriptionCreateInput: PrescriptionCreateInput, options?: RequestInit): Promise<PrescriptionWithUsers> => {
+
+  return customFetch<PrescriptionWithUsers>(getCreatePrescriptionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      prescriptionCreateInput,)
+  }
+);}
+
+
+
+
+export const getCreatePrescriptionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrescription>>, TError,{data: BodyType<PrescriptionCreateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPrescription>>, TError,{data: BodyType<PrescriptionCreateInput>}, TContext> => {
+
+const mutationKey = ['createPrescription'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPrescription>>, {data: BodyType<PrescriptionCreateInput>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPrescription(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePrescriptionMutationResult = NonNullable<Awaited<ReturnType<typeof createPrescription>>>
+    export type CreatePrescriptionMutationBody = BodyType<PrescriptionCreateInput>
+    export type CreatePrescriptionMutationError = ErrorType<ErrorResponse>
+
+    export const useCreatePrescription = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrescription>>, TError,{data: BodyType<PrescriptionCreateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof createPrescription>>,
+        TError,
+        {data: BodyType<PrescriptionCreateInput>},
+        TContext
+      > => {
+      return useMutation(getCreatePrescriptionMutationOptions(options));
+    }
+
+export const getGetProvidersUrl = () => {
+
+
+
+
+  return `/api/telehealth/providers`
+}
+
+export const getProviders = async ( options?: RequestInit): Promise<TelehealthUserProfile[]> => {
+
+  return customFetch<TelehealthUserProfile[]>(getGetProvidersUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetProvidersQueryKey = () => {
+    return [
+    `/api/telehealth/providers`
+    ] as const;
+    }
+
+
+export const getGetProvidersQueryOptions = <TData = Awaited<ReturnType<typeof getProviders>>, TError = ErrorType<ErrorResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProviders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetProvidersQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getProviders>>> = ({ signal }) => getProviders({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getProviders>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetProvidersQueryResult = NonNullable<Awaited<ReturnType<typeof getProviders>>>
+export type GetProvidersQueryError = ErrorType<ErrorResponse>
+
+
+
+export function useGetProviders<TData = Awaited<ReturnType<typeof getProviders>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getProviders>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetProvidersQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetPatientsUrl = () => {
+
+
+
+
+  return `/api/telehealth/patients`
+}
+
+export const getPatients = async ( options?: RequestInit): Promise<TelehealthUserProfile[]> => {
+
+  return customFetch<TelehealthUserProfile[]>(getGetPatientsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetPatientsQueryKey = () => {
+    return [
+    `/api/telehealth/patients`
+    ] as const;
+    }
+
+
+export const getGetPatientsQueryOptions = <TData = Awaited<ReturnType<typeof getPatients>>, TError = ErrorType<ErrorResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPatients>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPatientsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPatients>>> = ({ signal }) => getPatients({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPatients>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetPatientsQueryResult = NonNullable<Awaited<ReturnType<typeof getPatients>>>
+export type GetPatientsQueryError = ErrorType<ErrorResponse>
+
+
+
+export function useGetPatients<TData = Awaited<ReturnType<typeof getPatients>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getPatients>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetPatientsQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetAuditLogsUrl = () => {
+
+
+
+
+  return `/api/telehealth/audit-logs`
+}
+
+export const getAuditLogs = async ( options?: RequestInit): Promise<AuditLogEntry[]> => {
+
+  return customFetch<AuditLogEntry[]>(getGetAuditLogsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetAuditLogsQueryKey = () => {
+    return [
+    `/api/telehealth/audit-logs`
+    ] as const;
+    }
+
+
+export const getGetAuditLogsQueryOptions = <TData = Awaited<ReturnType<typeof getAuditLogs>>, TError = ErrorType<ErrorResponse>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAuditLogs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAuditLogsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAuditLogs>>> = ({ signal }) => getAuditLogs({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAuditLogs>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetAuditLogsQueryResult = NonNullable<Awaited<ReturnType<typeof getAuditLogs>>>
+export type GetAuditLogsQueryError = ErrorType<ErrorResponse>
+
+
+
+export function useGetAuditLogs<TData = Awaited<ReturnType<typeof getAuditLogs>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getAuditLogs>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetAuditLogsQueryOptions(options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

@@ -9,7 +9,6 @@ import * as zod from 'zod';
 
 
 /**
- * Returns server health status
  * @summary Health check
  */
 export const HealthCheckResponse = zod.object({
@@ -17,9 +16,6 @@ export const HealthCheckResponse = zod.object({
 })
 
 
-/**
- * @summary Submit contact form
- */
 
 
 
@@ -32,9 +28,6 @@ export const SubmitContactBody = zod.object({
 })
 
 
-/**
- * @summary Submit volunteer application
- */
 
 
 
@@ -46,18 +39,12 @@ export const SubmitVolunteerBody = zod.object({
 })
 
 
-/**
- * @summary Subscribe to newsletter
- */
 export const SubscribeNewsletterBody = zod.object({
   "email": zod.string().email(),
   "name": zod.string().nullish()
 })
 
 
-/**
- * @summary Get impact statistics
- */
 export const GetStatsResponse = zod.object({
   "ruralCommunitiesReached": zod.number(),
   "healthcarePartnerships": zod.number(),
@@ -66,9 +53,6 @@ export const GetStatsResponse = zod.object({
 })
 
 
-/**
- * @summary Get blog posts
- */
 export const GetBlogPostsResponseItem = zod.object({
   "id": zod.number(),
   "title": zod.string(),
@@ -79,5 +63,246 @@ export const GetBlogPostsResponseItem = zod.object({
   "imageUrl": zod.string().nullish()
 })
 export const GetBlogPostsResponse = zod.array(GetBlogPostsResponseItem)
+
+
+export const telehealthRegisterBodyPasswordMin = 8;
+
+
+
+
+export const TelehealthRegisterBody = zod.object({
+  "email": zod.string().email(),
+  "password": zod.string().min(telehealthRegisterBodyPasswordMin),
+  "name": zod.string().min(1),
+  "role": zod.enum(['patient', 'provider']),
+  "specialty": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "consentedToTerms": zod.boolean()
+})
+
+
+export const TelehealthLoginBody = zod.object({
+  "email": zod.string().email(),
+  "password": zod.string()
+})
+
+export const TelehealthLoginResponse = zod.object({
+  "token": zod.string(),
+  "user": zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['patient', 'provider']),
+  "specialty": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "mfaEnabled": zod.boolean()
+}),
+  "mfaRequired": zod.boolean(),
+  "mfaSetupRequired": zod.boolean().optional()
+})
+
+
+export const TelehealthMfaSetupResponse = zod.object({
+  "secret": zod.string(),
+  "otpauthUrl": zod.string(),
+  "backupCodes": zod.array(zod.string())
+})
+
+
+export const TelehealthMfaVerifyBody = zod.object({
+  "code": zod.string(),
+  "action": zod.enum(['enable', 'login']).optional()
+})
+
+export const TelehealthMfaVerifyResponse = zod.object({
+  "token": zod.string(),
+  "user": zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['patient', 'provider']),
+  "specialty": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "mfaEnabled": zod.boolean()
+})
+})
+
+
+export const TelehealthMeResponse = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['patient', 'provider']),
+  "specialty": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "mfaEnabled": zod.boolean()
+})
+
+
+export const TelehealthLogoutResponse = zod.object({
+  "message": zod.string()
+})
+
+
+export const GetAppointmentsResponseItem = zod.object({
+  "id": zod.number(),
+  "patientId": zod.number(),
+  "providerId": zod.number(),
+  "scheduledAt": zod.string(),
+  "status": zod.enum(['scheduled', 'confirmed', 'in_progress', 'completed', 'cancelled']),
+  "type": zod.enum(['video', 'phone', 'follow_up']),
+  "notes": zod.string().nullish(),
+  "videoRoomUrl": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "patientName": zod.string().nullish(),
+  "providerName": zod.string().nullish(),
+  "providerSpecialty": zod.string().nullish()
+})
+export const GetAppointmentsResponse = zod.array(GetAppointmentsResponseItem)
+
+
+export const CreateAppointmentBody = zod.object({
+  "providerId": zod.number(),
+  "scheduledAt": zod.string(),
+  "type": zod.enum(['video', 'phone', 'follow_up']),
+  "notes": zod.string().nullish()
+})
+
+
+export const UpdateAppointmentParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateAppointmentBody = zod.object({
+  "status": zod.enum(['scheduled', 'confirmed', 'in_progress', 'completed', 'cancelled']).optional(),
+  "notes": zod.string().nullish(),
+  "videoRoomUrl": zod.string().nullish()
+})
+
+export const UpdateAppointmentResponse = zod.object({
+  "id": zod.number(),
+  "patientId": zod.number(),
+  "providerId": zod.number(),
+  "scheduledAt": zod.string(),
+  "status": zod.enum(['scheduled', 'confirmed', 'in_progress', 'completed', 'cancelled']),
+  "type": zod.enum(['video', 'phone', 'follow_up']),
+  "notes": zod.string().nullish(),
+  "videoRoomUrl": zod.string().nullish(),
+  "createdAt": zod.string(),
+  "patientName": zod.string().nullish(),
+  "providerName": zod.string().nullish(),
+  "providerSpecialty": zod.string().nullish()
+})
+
+
+export const GetMessagesQueryParams = zod.object({
+  "withUserId": zod.coerce.number().optional()
+})
+
+export const GetMessagesResponseItem = zod.object({
+  "id": zod.number(),
+  "senderId": zod.number(),
+  "recipientId": zod.number(),
+  "content": zod.string(),
+  "isRead": zod.boolean(),
+  "createdAt": zod.string(),
+  "senderName": zod.string().nullish(),
+  "recipientName": zod.string().nullish()
+})
+export const GetMessagesResponse = zod.array(GetMessagesResponseItem)
+
+
+
+
+
+export const SendMessageBody = zod.object({
+  "recipientId": zod.number(),
+  "content": zod.string().min(1)
+})
+
+
+export const GetDocumentsResponseItem = zod.object({
+  "id": zod.number(),
+  "patientId": zod.number(),
+  "uploadedById": zod.number(),
+  "filename": zod.string(),
+  "documentType": zod.enum(['lab_result', 'imaging', 'referral', 'insurance', 'consent', 'other']),
+  "fileSizeBytes": zod.number().nullish(),
+  "createdAt": zod.string(),
+  "uploaderName": zod.string().nullish()
+})
+export const GetDocumentsResponse = zod.array(GetDocumentsResponseItem)
+
+
+export const UploadDocumentBody = zod.object({
+  "filename": zod.string(),
+  "documentType": zod.enum(['lab_result', 'imaging', 'referral', 'insurance', 'consent', 'other']),
+  "patientId": zod.number().nullish(),
+  "fileSizeBytes": zod.number().nullish()
+})
+
+
+export const GetPrescriptionsResponseItem = zod.object({
+  "id": zod.number(),
+  "patientId": zod.number(),
+  "providerId": zod.number(),
+  "medication": zod.string(),
+  "dosage": zod.string(),
+  "frequency": zod.string(),
+  "instructions": zod.string().nullish(),
+  "refills": zod.number().optional(),
+  "status": zod.enum(['active', 'completed', 'cancelled']),
+  "prescribedAt": zod.string(),
+  "patientName": zod.string().nullish(),
+  "providerName": zod.string().nullish()
+})
+export const GetPrescriptionsResponse = zod.array(GetPrescriptionsResponseItem)
+
+
+export const CreatePrescriptionBody = zod.object({
+  "patientId": zod.number(),
+  "medication": zod.string(),
+  "dosage": zod.string(),
+  "frequency": zod.string(),
+  "instructions": zod.string().nullish(),
+  "refills": zod.number().optional()
+})
+
+
+export const GetProvidersResponseItem = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['patient', 'provider']),
+  "specialty": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "mfaEnabled": zod.boolean()
+})
+export const GetProvidersResponse = zod.array(GetProvidersResponseItem)
+
+
+export const GetPatientsResponseItem = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['patient', 'provider']),
+  "specialty": zod.string().nullish(),
+  "phone": zod.string().nullish(),
+  "mfaEnabled": zod.boolean()
+})
+export const GetPatientsResponse = zod.array(GetPatientsResponseItem)
+
+
+export const GetAuditLogsResponseItem = zod.object({
+  "id": zod.number(),
+  "userId": zod.number().nullish(),
+  "action": zod.string(),
+  "resourceType": zod.string().nullish(),
+  "resourceId": zod.string().nullish(),
+  "ipAddress": zod.string().nullish(),
+  "details": zod.string().nullish(),
+  "createdAt": zod.string()
+})
+export const GetAuditLogsResponse = zod.array(GetAuditLogsResponseItem)
 
 
