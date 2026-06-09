@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "wouter";
 import { Facebook, Twitter, Linkedin, Instagram, Mail, Globe, MapPin } from "lucide-react";
+import ghriLogo from "@assets/ghri-logo-footer.png";
 
 export function Footer() {
   return (
@@ -8,12 +9,9 @@ export function Footer() {
       <div className="container mx-auto px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
           <div className="space-y-4 md:col-span-1">
-            <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-md bg-primary text-white font-bold text-lg">
-                G
-              </div>
-              <span className="text-xl font-bold tracking-tight">GHRI Foundation</span>
-            </div>
+            <Link href="/">
+              <img src={ghriLogo} alt="GHRI Foundation" className="h-12 w-auto" />
+            </Link>
             <p className="text-sm text-secondary-foreground/80 leading-relaxed max-w-xs">
               Expanding equitable access to quality healthcare for underserved communities worldwide through telemedicine, preventive care, and AI-driven innovation.
             </p>
