@@ -68,7 +68,7 @@ export default function Home() {
             className="max-w-3xl space-y-6"
           >
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight">
-              Healthcare <br/><span className="text-primary-foreground">Without Borders.</span>
+              Healthcare <br/><span className="text-primary-foreground">For Everyone.</span>
             </h1>
             <p className="text-xl md:text-2xl text-white/90 max-w-2xl leading-relaxed">
               Expanding access to healthcare through telemedicine, preventive care, and community-centered innovation.
@@ -84,7 +84,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-
       {/* Our Work */}
       <section className="py-24 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6">
@@ -116,7 +115,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Featured Program */}
       <section className="py-24 bg-primary text-white">
         <div className="container mx-auto px-4 md:px-6">
@@ -142,7 +140,6 @@ export default function Home() {
           </div>
         </div>
       </section>
-
       {/* Newsletter */}
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4 md:px-6 max-w-4xl text-center space-y-8">
@@ -165,7 +162,6 @@ export default function Home() {
           </form>
         </div>
       </section>
-
       {/* Final CTA */}
       <section className="py-24 bg-secondary text-center text-white">
         <div className="container mx-auto px-4 md:px-6 space-y-10 max-w-4xl">
