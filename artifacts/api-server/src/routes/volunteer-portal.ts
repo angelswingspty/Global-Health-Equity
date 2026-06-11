@@ -11,7 +11,7 @@ import {
   volEventRegistrationsTable,
   volMessagesTable,
 } from "@workspace/db";
-import { eq, and, desc, sql } from "drizzle-orm";
+import { eq, and, desc, sql, ne } from "drizzle-orm";
 import { verifyVolToken } from "./volunteer-auth";
 
 const router = Router();
@@ -339,9 +339,28 @@ router.post("/volunteers/messages", requireVolAuth, async (req: any, res) => {
     return;
   }
 
+  const targetId = parseInt(recipientId);
+  if (targetId === req.volUser.sub) {
+    res.status(400).json({ error: "You cannot message yourself" });
+    return;
+  }
+
+  const [recipient] = await db.select({ id: volUsersTable.id, role: volUsersTable.role })
+    .from(volUsersTable).where(eq(volUsersTable.id, targetId)).limit(1);
+  if (!recipient) {
+    res.status(404).json({ error: "Recipient not found" });
+    return;
+  }
+
+  // Role-aware policy: volunteers can only message coordinators; coordinators can message anyone.
+  if (req.volUser.role !== "coordinator" && recipient.role !== "coordinator") {
+    res.status(403).json({ error: "Volunteers can only message coordinators" });
+    return;
+  }
+
   const [msg] = await db.insert(volMessagesTable).values({
     senderId: req.volUser.sub,
-    recipientId: parseInt(recipientId),
+    recipientId: targetId,
     content,
   }).returning();
 
@@ -383,6 +402,21 @@ router.get("/volunteers/coordinators", requireVolAuth, async (req: any, res) => 
     role: volUsersTable.role, avatarInitials: volUsersTable.avatarInitials,
   }).from(volUsersTable).where(eq(volUsersTable.role, "coordinator"));
   res.json(coordinators);
+});
+
+// ── Directory (messageable contacts, role-aware) ─────────────────────────────
+// Coordinators can message anyone; volunteers can only message coordinators.
+router.get("/volunteers/directory", requireVolAuth, async (req: any, res) => {
+  const isCoordinator = req.volUser.role === "coordinator";
+  const rows = await db.select({
+    id: volUsersTable.id, name: volUsersTable.name, email: volUsersTable.email,
+    role: volUsersTable.role, avatarInitials: volUsersTable.avatarInitials,
+  }).from(volUsersTable).where(
+    isCoordinator
+      ? ne(volUsersTable.id, req.volUser.sub)
+      : and(eq(volUsersTable.role, "coordinator"), ne(volUsersTable.id, req.volUser.sub)),
+  ).orderBy(volUsersTable.name);
+  res.json(rows);
 });
 
 // ── Coordinator-only: List all volunteers ─────────────────────────────────────

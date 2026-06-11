@@ -3483,3 +3483,81 @@ export function useGetVolCoordinators<TData = Awaited<ReturnType<typeof getVolCo
 
 
 
+export const getGetVolDirectoryUrl = () => {
+
+
+
+
+  return `/api/volunteers/directory`
+}
+
+/**
+ * Coordinators can message anyone; volunteers can only message coordinators.
+ * @summary List messageable contacts (role-aware)
+ */
+export const getVolDirectory = async ( options?: RequestInit): Promise<VolUserProfile[]> => {
+
+  return customFetch<VolUserProfile[]>(getGetVolDirectoryUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVolDirectoryQueryKey = () => {
+    return [
+    `/api/volunteers/directory`
+    ] as const;
+    }
+
+
+export const getGetVolDirectoryQueryOptions = <TData = Awaited<ReturnType<typeof getVolDirectory>>, TError = ErrorType<unknown>>( options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolDirectory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVolDirectoryQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVolDirectory>>> = ({ signal }) => getVolDirectory({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVolDirectory>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVolDirectoryQueryResult = NonNullable<Awaited<ReturnType<typeof getVolDirectory>>>
+export type GetVolDirectoryQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List messageable contacts (role-aware)
+ */
+
+export function useGetVolDirectory<TData = Awaited<ReturnType<typeof getVolDirectory>>, TError = ErrorType<unknown>>(
+  options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolDirectory>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVolDirectoryQueryOptions(options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+

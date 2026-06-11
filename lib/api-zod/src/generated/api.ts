@@ -684,3 +684,21 @@ export const GetVolCoordinatorsResponseItem = zod.object({
 export const GetVolCoordinatorsResponse = zod.array(GetVolCoordinatorsResponseItem)
 
 
+/**
+ * Coordinators can message anyone; volunteers can only message coordinators.
+ * @summary List messageable contacts (role-aware)
+ */
+export const GetVolDirectoryResponseItem = zod.object({
+  "id": zod.number(),
+  "email": zod.string(),
+  "name": zod.string(),
+  "role": zod.enum(['volunteer', 'coordinator']),
+  "status": zod.enum(['pending', 'active', 'inactive']),
+  "avatarInitials": zod.string().nullish(),
+  "skills": zod.string().nullish(),
+  "availability": zod.string().nullish(),
+  "bio": zod.string().nullish()
+})
+export const GetVolDirectoryResponse = zod.array(GetVolDirectoryResponseItem)
+
+
