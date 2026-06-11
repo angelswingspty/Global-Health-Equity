@@ -1,8 +1,7 @@
 import React from "react";
-import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Heart, BookOpen, Clock, Calendar, FileText, MessageSquare, BarChart3, ArrowRight } from "lucide-react";
+import { Heart, BookOpen, Clock, Calendar, FileText, MessageSquare, BarChart3, ArrowRight, ShieldCheck } from "lucide-react";
 import { Link } from "wouter";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -31,7 +30,7 @@ export default function VolunteersLanding() {
             <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
               Join our community of dedicated volunteers helping to bring equitable healthcare to those who need it most. Every hour you give makes a lasting difference.
             </p>
-            <div className="flex items-center justify-center gap-4">
+            <div className="flex items-center justify-center gap-4 flex-wrap">
               <Link href="/volunteers/register">
                 <Button size="lg" className="bg-white text-[#003F5C] hover:bg-white/90 font-semibold text-base px-8">
                   Become a Volunteer
@@ -42,6 +41,14 @@ export default function VolunteersLanding() {
                 <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10 font-semibold text-base px-8">
                   Sign In
                 </Button>
+              </Link>
+            </div>
+            <div className="mt-6">
+              <Link href="/volunteers/login">
+                <button className="inline-flex items-center gap-2 text-white/60 hover:text-white text-sm transition-colors border border-white/20 rounded-full px-4 py-2 hover:bg-white/10">
+                  <ShieldCheck className="w-4 h-4" />
+                  Coordinator Login
+                </button>
               </Link>
             </div>
           </div>
@@ -80,6 +87,29 @@ export default function VolunteersLanding() {
                 Get Started Today
               </Button>
             </Link>
+          </div>
+        </section>
+
+        {/* Coordinator access */}
+        <section className="py-10 bg-[#003F5C]">
+          <div className="container mx-auto px-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-6 h-6 text-[#0093D5]" />
+                </div>
+                <div>
+                  <p className="font-semibold text-white text-lg">Coordinator Access</p>
+                  <p className="text-white/60 text-sm">Staff and program coordinators — manage volunteers, approve hours, and oversee events.</p>
+                </div>
+              </div>
+              <Link href="/volunteers/login">
+                <Button className="bg-[#0093D5] hover:bg-[#007ab8] text-white font-semibold px-8 shrink-0">
+                  Coordinator Login
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </section>
       </main>
