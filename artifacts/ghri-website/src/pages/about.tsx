@@ -3,7 +3,7 @@ import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
-import nottermanPhoto from "@assets/20201207_NottermanD_DJA_006_0_1781195558546.jpg";
+import nottermanPhoto from "@assets/High_Res_headshot_1781202863030.jpg";
 import chuPhoto from "@assets/photocache.6083_1781195711753.jpg";
 import angelPhoto from "@assets/1769309118371_1781195860238.jpeg";
 
