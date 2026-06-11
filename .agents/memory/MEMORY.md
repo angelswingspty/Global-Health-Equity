@@ -1,2 +1,3 @@
 - [GHRI API client auth](ghri-api-auth.md) — no global token getter is wired; every generated hook (queries AND mutations) must pass per-call request headers or it 401s.
 - [Telehealth video visits](telehealth-video-visits.md) — video runs on Jitsi (meet.jit.si/ghri-appt-<id>), not Zoom; the ZOOM_* secrets are Meeting-SDK creds that can't create meetings.
+- [Telehealth cache isolation](telehealth-cache-isolation.md) — telehealth PHI query keys must be user-scoped (e.g. ["getMessages", user.id]) and the cache cleared on login/logout, or users see each other's data.

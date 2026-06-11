@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useLocation } from "wouter";
+import { useQueryClient } from "@tanstack/react-query";
 import { TelehealthUserProfile } from "@workspace/api-client-react";
 
 interface TelehealthAuthContextType {
@@ -30,21 +31,26 @@ export function TelehealthAuthProvider({ children }: { children: React.ReactNode
 
   const [isSessionWarningOpen, setIsSessionWarningOpen] = useState(false);
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
 
   const login = useCallback((newToken: string, newUser: TelehealthUserProfile) => {
+    // Drop any cached data from a previous session before the new user loads theirs
+    queryClient.clear();
     setToken(newToken);
     setUser(newUser);
     localStorage.setItem("telehealth_token", newToken);
     localStorage.setItem("telehealth_user", JSON.stringify(newUser));
-  }, []);
+  }, [queryClient]);
 
   const logout = useCallback(() => {
     setToken(null);
     setUser(null);
     localStorage.removeItem("telehealth_token");
     localStorage.removeItem("telehealth_user");
+    // Clear cached PHI (messages, appointments, etc.) so the next user can't see it
+    queryClient.clear();
     setLocation("/telehealth/login");
-  }, [setLocation]);
+  }, [setLocation, queryClient]);
 
   const [lastActivity, setLastActivity] = useState(Date.now());
 
