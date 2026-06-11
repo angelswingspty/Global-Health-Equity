@@ -127,6 +127,7 @@ export default function PatientAppointments() {
         <VideoCallModal
           appointment={activeCall}
           userName={user?.name ?? "Patient"}
+          userEmail={user?.email}
           role="patient"
           onClose={() => setActiveCall(null)}
         />

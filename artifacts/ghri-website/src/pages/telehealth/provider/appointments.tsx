@@ -144,6 +144,7 @@ export default function ProviderAppointments() {
         <VideoCallModal
           appointment={activeCall}
           userName={user?.name ?? "Provider"}
+          userEmail={user?.email}
           role="provider"
           onClose={() => setActiveCall(null)}
         />

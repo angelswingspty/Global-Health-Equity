@@ -14,9 +14,11 @@ import telehealthAdminRouter from "./telehealth-admin";
 import patientIntakeRouter from "./patient-intake";
 import volunteerAuthRouter from "./volunteer-auth";
 import volunteerPortalRouter from "./volunteer-portal";
+import zoomRouter from "./zoom";
 
 const router: IRouter = Router();
 
+router.use(zoomRouter);
 router.use(healthRouter);
 router.use(contactRouter);
 router.use(volunteerRouter);
