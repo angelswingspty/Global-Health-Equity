@@ -11,8 +11,8 @@ import { Link } from "wouter";
 function LoginForm({ isCoordinator }: { isCoordinator: boolean }) {
   const { login } = useVolAuth();
   const [, setLocation] = useLocation();
-  const [email, setEmail] = useState(isCoordinator ? "coordinator@ghri.org" : "");
-  const [password, setPassword] = useState(isCoordinator ? "Coord1234!" : "");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -109,10 +109,6 @@ export default function VolLogin() {
               <p>New volunteer?{" "}
                 <Link href="/volunteers/register" className="text-[#0093D5] hover:underline font-medium">Create an account</Link>
               </p>
-              <p className="mt-3 text-xs text-muted-foreground/70">
-                Demo credentials:<br />
-                <span className="font-mono">volunteer@demo.ghri.org / Demo1234!</span>
-              </p>
             </div>
           </CardContent>
         </Card>
@@ -142,9 +138,6 @@ export default function VolLogin() {
               </CardHeader>
               <CardContent>
                 <LoginForm isCoordinator={true} />
-                <p className="mt-4 text-center text-xs text-muted-foreground/70">
-                  Demo: <span className="font-mono">coordinator@ghri.org / Coord1234!</span>
-                </p>
               </CardContent>
             </Card>
           )}

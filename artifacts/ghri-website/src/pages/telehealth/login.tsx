@@ -85,10 +85,6 @@ export default function TelehealthLogin() {
             </TabsList>
           </Tabs>
 
-          <div className="bg-slate-100 p-3 rounded-md mb-6 text-xs text-slate-600 border flex items-start gap-2">
-            <Shield className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-            <p>Demo credentials: <strong>{role}@demo.ghri.org</strong> / <strong>Demo1234!</strong></p>
-          </div>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
