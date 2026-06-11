@@ -3,13 +3,14 @@ import { Layout } from "@/components/layout/Layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
+import nottermanPhoto from "@assets/20201207_NottermanD_DJA_006_0_1781195558546.jpg";
 
 export default function About() {
   const boardMembers = [
-    { name: "Angel Ndubisi", role: "Founder & President" },
-    { name: "Dr. Daniel Notterman, MD", role: "Board Member" },
-    { name: "Dr. Larry Chu, MD", role: "Board Member" },
-    { name: "King-David Ndubisi", role: "Board Member" }
+    { name: "Angel Ndubisi", role: "Founder & President", photo: null },
+    { name: "Dr. Daniel Notterman, MD", role: "Advisory Board", photo: nottermanPhoto },
+    { name: "Dr. Larry Chu, MD", role: "Advisory Board", photo: null },
+    { name: "King-David Ndubisi", role: "Advisory Board", photo: null }
   ];
 
   return (
@@ -114,10 +115,14 @@ export default function About() {
                 transition={{ delay: i * 0.1 }}
               >
                 <Card className="h-full overflow-hidden group hover:shadow-lg transition-shadow">
-                  <div className="aspect-square bg-gray-200 flex items-center justify-center">
-                    <span className="text-4xl text-gray-400 font-bold tracking-widest uppercase">
-                      {member.name.split(" ").map(n => n[0]).join("")}
-                    </span>
+                  <div className="aspect-square bg-gray-200 flex items-center justify-center overflow-hidden">
+                    {member.photo ? (
+                      <img src={member.photo} alt={member.name} className="w-full h-full object-cover object-top" />
+                    ) : (
+                      <span className="text-4xl text-gray-400 font-bold tracking-widest uppercase">
+                        {member.name.split(" ").map(n => n[0]).join("")}
+                      </span>
+                    )}
                   </div>
                   <CardContent className="p-6 text-center space-y-2">
                     <h3 className="font-bold text-secondary text-lg group-hover:text-primary transition-colors">{member.name}</h3>
