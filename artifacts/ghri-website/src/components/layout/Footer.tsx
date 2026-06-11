@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "wouter";
-import { Facebook, Twitter, Linkedin, Instagram, Mail, Globe, MapPin } from "lucide-react";
+import { Facebook, Linkedin, Instagram, Mail, Globe, MapPin } from "lucide-react";
 import ghriLogo from "@assets/ghri-logo-footer.png";
 
 export function Footer() {
@@ -56,9 +56,6 @@ export function Footer() {
             <div className="flex items-center gap-4 mt-6">
               <a href="https://www.facebook.com/Globalhealthreforminitiative/" target="_blank" rel="noopener noreferrer" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
-              </a>
-              <a href="#" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Twitter">
-                <Twitter className="w-5 h-5" />
               </a>
               <a href="https://www.linkedin.com/in/global-health-reform-initiative-ghri-103541375/" target="_blank" rel="noopener noreferrer" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
