@@ -22,6 +22,7 @@ import AuditLog from "@/pages/telehealth/audit-log";
 
 import PatientDashboard from "@/pages/telehealth/patient/dashboard";
 import PatientAppointments from "@/pages/telehealth/patient/appointments";
+import FindADoctor from "@/pages/telehealth/patient/find-a-doctor";
 import PatientMessages from "@/pages/telehealth/patient/messages";
 import PatientDocuments from "@/pages/telehealth/patient/documents";
 import PatientPrescriptions from "@/pages/telehealth/patient/prescriptions";
@@ -68,6 +69,7 @@ function Router() {
 
       <Route path="/telehealth/patient/dashboard" component={PatientDashboard} />
       <Route path="/telehealth/patient/appointments" component={PatientAppointments} />
+      <Route path="/telehealth/patient/find-a-doctor" component={FindADoctor} />
       <Route path="/telehealth/patient/messages" component={PatientMessages} />
       <Route path="/telehealth/patient/documents" component={PatientDocuments} />
       <Route path="/telehealth/patient/prescriptions" component={PatientPrescriptions} />

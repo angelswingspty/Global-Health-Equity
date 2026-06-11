@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "wouter";
 import { useTelehealthAuth } from "@/contexts/TelehealthAuthContext";
-import { Shield, LogOut, LayoutDashboard, Calendar, MessageSquare, FileText, Pill, Users, Activity } from "lucide-react";
+import { Shield, LogOut, LayoutDashboard, Calendar, MessageSquare, FileText, Pill, Users, Activity, Stethoscope } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { SessionTimeoutModal } from "./SessionTimeoutModal";
@@ -18,6 +18,7 @@ export function TelehealthLayout({ children }: { children: React.ReactNode }) {
   const navItems = isPatient
     ? [
         { label: "Dashboard", href: "/telehealth/patient/dashboard", icon: LayoutDashboard },
+        { label: "Find a Doctor", href: "/telehealth/patient/find-a-doctor", icon: Stethoscope },
         { label: "Appointments", href: "/telehealth/patient/appointments", icon: Calendar },
         { label: "Messages", href: "/telehealth/patient/messages", icon: MessageSquare },
         { label: "Documents", href: "/telehealth/patient/documents", icon: FileText },
