@@ -9,7 +9,7 @@ import angelPhoto from "@assets/1769309118371_1781195860238.jpeg";
 
 export default function About() {
   const boardMembers = [
-    { name: "Angel Ndubisi", role: "Founder & President", photo: angelPhoto },
+    { name: "Angel Ndubisi", role: "President", photo: angelPhoto },
     { name: "Dr. Daniel Notterman, MD", role: "Advisory Board", photo: nottermanPhoto },
     { name: "Dr. Larry Chu, MD", role: "Advisory Board", photo: chuPhoto },
     { name: "King-David Ndubisi", role: "Advisory Board", photo: null }
