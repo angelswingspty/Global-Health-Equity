@@ -45,7 +45,7 @@ export default function MfaVerify() {
           toast({
             variant: "destructive",
             title: "Verification Failed",
-            description: err.response?.data?.error || "Invalid code. Please try again.",
+            description: err.data?.error || err.message || "Invalid code. Please try again.",
           });
         }
       }

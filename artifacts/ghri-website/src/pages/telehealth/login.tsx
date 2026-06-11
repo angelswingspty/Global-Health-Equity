@@ -57,7 +57,7 @@ export default function TelehealthLogin() {
           toast({
             variant: "destructive",
             title: "Authentication Failed",
-            description: err.response?.data?.error || "Invalid credentials. Please try again.",
+            description: err.data?.error || err.message || "Invalid credentials. Please try again.",
           });
         }
       }

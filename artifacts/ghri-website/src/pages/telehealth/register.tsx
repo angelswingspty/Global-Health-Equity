@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useTelehealthRegister } from "@workspace/api-client-react";
+import { useTelehealthAuth } from "@/contexts/TelehealthAuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -35,6 +36,7 @@ export default function TelehealthRegister() {
   const [role, setRole] = React.useState<"patient" | "provider">(initialRole);
   
   const { toast } = useToast();
+  const { login } = useTelehealthAuth();
   const registerMutation = useTelehealthRegister();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -65,7 +67,8 @@ export default function TelehealthRegister() {
         } 
       },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
+          login(data.token, data.user);
           toast({
             title: "Registration successful",
             description: "Please set up multi-factor authentication.",
@@ -76,7 +79,7 @@ export default function TelehealthRegister() {
           toast({
             variant: "destructive",
             title: "Registration Failed",
-            description: err.response?.data?.error || "An error occurred during registration.",
+            description: err.data?.error || err.message || "An error occurred during registration.",
           });
         }
       }

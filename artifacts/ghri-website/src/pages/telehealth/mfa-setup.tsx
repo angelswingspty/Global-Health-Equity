@@ -42,7 +42,7 @@ export default function MfaSetup() {
         toast({
           variant: "destructive",
           title: "Setup Failed",
-          description: err.response?.data?.error || "Failed to initialize MFA setup.",
+          description: err.data?.error || err.message || "Failed to initialize MFA setup.",
         });
       }
     });
@@ -72,7 +72,7 @@ export default function MfaSetup() {
           toast({
             variant: "destructive",
             title: "Verification Failed",
-            description: err.response?.data?.error || "Invalid code. Please try again.",
+            description: err.data?.error || err.message || "Invalid code. Please try again.",
           });
         }
       }
