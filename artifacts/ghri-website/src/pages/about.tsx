@@ -4,12 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 import nottermanPhoto from "@assets/20201207_NottermanD_DJA_006_0_1781195558546.jpg";
+import chuPhoto from "@assets/photocache.6083_1781195711753.jpg";
 
 export default function About() {
   const boardMembers = [
     { name: "Angel Ndubisi", role: "Founder & President", photo: null },
     { name: "Dr. Daniel Notterman, MD", role: "Advisory Board", photo: nottermanPhoto },
-    { name: "Dr. Larry Chu, MD", role: "Advisory Board", photo: null },
+    { name: "Dr. Larry Chu, MD", role: "Advisory Board", photo: chuPhoto },
     { name: "King-David Ndubisi", role: "Advisory Board", photo: null }
   ];
 
