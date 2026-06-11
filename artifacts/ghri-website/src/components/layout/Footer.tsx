@@ -50,8 +50,7 @@ export function Footer() {
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-5 h-5 text-primary shrink-0" />
-                <span className="text-left">732 S 6TH ST STE R
-                Las Vegas, NV 89101</span>
+                <span className="text-left">732 S 6TH ST STE R, Las Vegas, NV 89101</span>
               </li>
             </ul>
             <div className="flex items-center gap-4 mt-6">
