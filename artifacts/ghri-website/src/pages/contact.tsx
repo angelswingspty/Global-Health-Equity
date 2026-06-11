@@ -121,12 +121,12 @@ export default function Contact() {
                 <h3 className="font-bold text-secondary mb-4">Follow Our Journey</h3>
                 <div className="flex gap-4">
                   {[
-                    { icon: <Facebook className="w-6 h-6" />, label: "Facebook" },
-                    { icon: <Twitter className="w-6 h-6" />, label: "Twitter" },
-                    { icon: <Linkedin className="w-6 h-6" />, label: "LinkedIn" },
-                    { icon: <Instagram className="w-6 h-6" />, label: "Instagram" }
+                    { icon: <Facebook className="w-6 h-6" />, label: "Facebook", url: "https://www.facebook.com/Globalhealthreforminitiative/" },
+                    { icon: <Twitter className="w-6 h-6" />, label: "Twitter", url: "https://x.com/ghrifglobal" },
+                    { icon: <Linkedin className="w-6 h-6" />, label: "LinkedIn", url: "https://www.linkedin.com/in/global-health-reform-initiative-ghri-103541375/" },
+                    { icon: <Instagram className="w-6 h-6" />, label: "Instagram", url: "https://www.instagram.com/ghrifoundation" }
                   ].map((social, i) => (
-                    <a key={i} href="#" className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-secondary hover:bg-primary hover:text-white transition-all shadow-sm">
+                    <a key={i} href={social.url} target="_blank" rel="noopener noreferrer" aria-label={social.label} className="w-12 h-12 bg-white rounded-full flex items-center justify-center text-secondary hover:bg-primary hover:text-white transition-all shadow-sm">
                       {social.icon}
                     </a>
                   ))}

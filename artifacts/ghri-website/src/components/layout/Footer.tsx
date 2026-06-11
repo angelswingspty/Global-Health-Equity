@@ -57,7 +57,7 @@ export function Footer() {
               <a href="https://www.facebook.com/Globalhealthreforminitiative/" target="_blank" rel="noopener noreferrer" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="#" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Twitter">
+              <a href="https://x.com/ghrifglobal" target="_blank" rel="noopener noreferrer" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Twitter">
                 <Twitter className="w-5 h-5" />
               </a>
               <a href="https://www.linkedin.com/in/global-health-reform-initiative-ghri-103541375/" target="_blank" rel="noopener noreferrer" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="LinkedIn">
