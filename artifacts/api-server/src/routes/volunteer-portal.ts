@@ -285,4 +285,111 @@ router.get("/volunteers/coordinators", requireVolAuth, async (req: any, res) => 
   res.json(coordinators);
 });
 
+// ── Coordinator-only: List all volunteers ─────────────────────────────────────
+
+router.get("/volunteers/coordinator/volunteers", requireVolAuth, async (req: any, res) => {
+  if (req.volUser.role !== "coordinator") {
+    res.status(403).json({ error: "Coordinator access required" });
+    return;
+  }
+
+  const volunteers = await db.select({
+    id: volUsersTable.id,
+    name: volUsersTable.name,
+    email: volUsersTable.email,
+    role: volUsersTable.role,
+    status: volUsersTable.status,
+    phone: volUsersTable.phone,
+    skills: volUsersTable.skills,
+    availability: volUsersTable.availability,
+    avatarInitials: volUsersTable.avatarInitials,
+    createdAt: volUsersTable.createdAt,
+  }).from(volUsersTable).orderBy(desc(volUsersTable.createdAt));
+
+  // Attach approved hour totals per volunteer
+  const hourTotals = await db
+    .select({
+      volunteerId: volServiceHoursTable.volunteerId,
+      total: sql<number>`COALESCE(SUM(${volServiceHoursTable.hours}), 0)`,
+    })
+    .from(volServiceHoursTable)
+    .where(eq(volServiceHoursTable.status, "approved"))
+    .groupBy(volServiceHoursTable.volunteerId);
+
+  const hoursMap = new Map(hourTotals.map(h => [h.volunteerId, Number(h.total)]));
+
+  res.json(volunteers.map(v => ({
+    ...v,
+    createdAt: v.createdAt.toISOString(),
+    approvedHours: hoursMap.get(v.id) ?? 0,
+  })));
+});
+
+// ── Coordinator-only: Update volunteer status ─────────────────────────────────
+
+router.patch("/volunteers/coordinator/volunteers/:id", requireVolAuth, async (req: any, res) => {
+  if (req.volUser.role !== "coordinator") {
+    res.status(403).json({ error: "Coordinator access required" });
+    return;
+  }
+
+  const id = parseInt(req.params.id as string);
+  const { status } = req.body;
+
+  if (!["pending", "active", "inactive"].includes(status)) {
+    res.status(400).json({ error: "status must be pending, active, or inactive" });
+    return;
+  }
+
+  const [updated] = await db
+    .update(volUsersTable)
+    .set({ status, updatedAt: new Date() })
+    .where(eq(volUsersTable.id, id))
+    .returning({
+      id: volUsersTable.id,
+      name: volUsersTable.name,
+      email: volUsersTable.email,
+      status: volUsersTable.status,
+    });
+
+  if (!updated) {
+    res.status(404).json({ error: "Volunteer not found" });
+    return;
+  }
+
+  res.json(updated);
+});
+
+// ── Coordinator-only: All hours (with volunteer name) ─────────────────────────
+
+router.get("/volunteers/coordinator/hours", requireVolAuth, async (req: any, res) => {
+  if (req.volUser.role !== "coordinator") {
+    res.status(403).json({ error: "Coordinator access required" });
+    return;
+  }
+
+  const hours = await db
+    .select({
+      id: volServiceHoursTable.id,
+      volunteerId: volServiceHoursTable.volunteerId,
+      volunteerName: volUsersTable.name,
+      volunteerInitials: volUsersTable.avatarInitials,
+      description: volServiceHoursTable.description,
+      hours: volServiceHoursTable.hours,
+      serviceDate: volServiceHoursTable.serviceDate,
+      status: volServiceHoursTable.status,
+      reviewNotes: volServiceHoursTable.reviewNotes,
+      createdAt: volServiceHoursTable.createdAt,
+    })
+    .from(volServiceHoursTable)
+    .leftJoin(volUsersTable, eq(volServiceHoursTable.volunteerId, volUsersTable.id))
+    .orderBy(desc(volServiceHoursTable.createdAt));
+
+  res.json(hours.map(h => ({
+    ...h,
+    serviceDate: h.serviceDate.toISOString(),
+    createdAt: h.createdAt.toISOString(),
+  })));
+});
+
 export default router;

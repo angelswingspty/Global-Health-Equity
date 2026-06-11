@@ -43,6 +43,9 @@ import VolHours from "@/pages/volunteers/hours";
 import VolEvents from "@/pages/volunteers/events";
 import VolMessages from "@/pages/volunteers/messages";
 import VolImpact from "@/pages/volunteers/impact";
+import CoordDashboard from "@/pages/volunteers/coordinator/dashboard";
+import CoordVolunteers from "@/pages/volunteers/coordinator/volunteers";
+import CoordHours from "@/pages/volunteers/coordinator/hours";
 
 const queryClient = new QueryClient();
 
@@ -86,6 +89,9 @@ function Router() {
       <Route path="/volunteers/events" component={VolEvents} />
       <Route path="/volunteers/messages" component={VolMessages} />
       <Route path="/volunteers/impact" component={VolImpact} />
+      <Route path="/volunteers/coordinator/dashboard" component={CoordDashboard} />
+      <Route path="/volunteers/coordinator/volunteers" component={CoordVolunteers} />
+      <Route path="/volunteers/coordinator/hours" component={CoordHours} />
 
       <Route component={NotFound} />
     </Switch>
