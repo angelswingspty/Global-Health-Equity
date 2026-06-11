@@ -51,6 +51,8 @@ import type {
   VolCompleteTrainingInput,
   VolEvent,
   VolEventInput,
+  VolEventRegistrant,
+  VolEventUpdateInput,
   VolHoursInput,
   VolHoursUpdateInput,
   VolImpactMetrics,
@@ -2819,6 +2821,225 @@ export const useCreateVolEvent = <TError = ErrorType<unknown>,
       > => {
       return useMutation(getCreateVolEventMutationOptions(options));
     }
+
+export const getUpdateVolEventUrl = (id: number,) => {
+
+
+
+
+  return `/api/volunteers/events/${id}`
+}
+
+/**
+ * @summary Update or cancel an event (coordinator only)
+ */
+export const updateVolEvent = async (id: number,
+    volEventUpdateInput: VolEventUpdateInput, options?: RequestInit): Promise<VolEvent> => {
+
+  return customFetch<VolEvent>(getUpdateVolEventUrl(id),
+  {
+    ...options,
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      volEventUpdateInput,)
+  }
+);}
+
+
+
+
+export const getUpdateVolEventMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateVolEvent>>, TError,{id: number;data: BodyType<VolEventUpdateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateVolEvent>>, TError,{id: number;data: BodyType<VolEventUpdateInput>}, TContext> => {
+
+const mutationKey = ['updateVolEvent'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateVolEvent>>, {id: number;data: BodyType<VolEventUpdateInput>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateVolEvent(id,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateVolEventMutationResult = NonNullable<Awaited<ReturnType<typeof updateVolEvent>>>
+    export type UpdateVolEventMutationBody = BodyType<VolEventUpdateInput>
+    export type UpdateVolEventMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update or cancel an event (coordinator only)
+ */
+export const useUpdateVolEvent = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateVolEvent>>, TError,{id: number;data: BodyType<VolEventUpdateInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateVolEvent>>,
+        TError,
+        {id: number;data: BodyType<VolEventUpdateInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateVolEventMutationOptions(options));
+    }
+
+export const getDeleteVolEventUrl = (id: number,) => {
+
+
+
+
+  return `/api/volunteers/events/${id}`
+}
+
+/**
+ * @summary Delete an event (coordinator only)
+ */
+export const deleteVolEvent = async (id: number, options?: RequestInit): Promise<void> => {
+
+  return customFetch<void>(getDeleteVolEventUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+export const getDeleteVolEventMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVolEvent>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteVolEvent>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteVolEvent'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteVolEvent>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteVolEvent(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteVolEventMutationResult = NonNullable<Awaited<ReturnType<typeof deleteVolEvent>>>
+
+    export type DeleteVolEventMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Delete an event (coordinator only)
+ */
+export const useDeleteVolEvent = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteVolEvent>>, TError,{id: number}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof deleteVolEvent>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+      return useMutation(getDeleteVolEventMutationOptions(options));
+    }
+
+export const getGetVolEventRegistrationsUrl = (id: number,) => {
+
+
+
+
+  return `/api/volunteers/events/${id}/registrations`
+}
+
+/**
+ * @summary List volunteers registered for an event (coordinator only)
+ */
+export const getVolEventRegistrations = async (id: number, options?: RequestInit): Promise<VolEventRegistrant[]> => {
+
+  return customFetch<VolEventRegistrant[]>(getGetVolEventRegistrationsUrl(id),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetVolEventRegistrationsQueryKey = (id: number,) => {
+    return [
+    `/api/volunteers/events/${id}/registrations`
+    ] as const;
+    }
+
+
+export const getGetVolEventRegistrationsQueryOptions = <TData = Awaited<ReturnType<typeof getVolEventRegistrations>>, TError = ErrorType<unknown>>(id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolEventRegistrations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetVolEventRegistrationsQueryKey(id);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getVolEventRegistrations>>> = ({ signal }) => getVolEventRegistrations(id, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getVolEventRegistrations>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetVolEventRegistrationsQueryResult = NonNullable<Awaited<ReturnType<typeof getVolEventRegistrations>>>
+export type GetVolEventRegistrationsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary List volunteers registered for an event (coordinator only)
+ */
+
+export function useGetVolEventRegistrations<TData = Awaited<ReturnType<typeof getVolEventRegistrations>>, TError = ErrorType<unknown>>(
+ id: number, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getVolEventRegistrations>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetVolEventRegistrationsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
 
 export const getRegisterVolEventUrl = (id: number,) => {
 

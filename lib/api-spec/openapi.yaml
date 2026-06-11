@@ -857,6 +857,68 @@ paths:
               schema:
                 $ref: "#/components/schemas/VolEvent"
 
+  /volunteers/events/{id}:
+    patch:
+      operationId: updateVolEvent
+      tags: [volunteer-events]
+      summary: Update or cancel an event (coordinator only)
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VolEventUpdateInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VolEvent"
+    delete:
+      operationId: deleteVolEvent
+      tags: [volunteer-events]
+      summary: Delete an event (coordinator only)
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Deleted
+
+  /volunteers/events/{id}/registrations:
+    get:
+      operationId: getVolEventRegistrations
+      tags: [volunteer-events]
+      summary: List volunteers registered for an event (coordinator only)
+      security: [{bearerAuth: []}]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Registrants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/VolEventRegistrant"
+
   /volunteers/events/{id}/register:
     post:
       operationId: registerVolEvent
@@ -1597,7 +1659,29 @@ components:
           type: ["string", "null"]
         registered:
           type: boolean
+        registrationCount:
+          type: integer
         createdAt:
+          type: string
+
+    VolEventRegistrant:
+      type: object
+      required: [id, volunteerId, name, email, status, registeredAt]
+      properties:
+        id:
+          type: integer
+        volunteerId:
+          type: integer
+        name:
+          type: string
+        email:
+          type: string
+        avatarInitials:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [registered, attended, cancelled]
+        registeredAt:
           type: string
 
     VolEventInput:
@@ -1618,6 +1702,27 @@ components:
           type: integer
         category:
           type: string
+
+    VolEventUpdateInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: ["string", "null"]
+        location:
+          type: ["string", "null"]
+        startTime:
+          type: string
+        endTime:
+          type: string
+        maxVolunteers:
+          type: ["integer", "null"]
+        category:
+          type: ["string", "null"]
+        status:
+          type: string
+          enum: [upcoming, active, completed, cancelled]
 
     VolMessage:
       type: object

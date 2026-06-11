@@ -164,12 +164,20 @@ router.get("/volunteers/events", requireVolAuth, async (req: any, res) => {
 
   const registeredIds = new Set(myRegs.filter(r => r.status !== "cancelled").map(r => r.eventId));
 
+  const counts = await db
+    .select({ eventId: volEventRegistrationsTable.eventId, count: sql<number>`COUNT(*)` })
+    .from(volEventRegistrationsTable)
+    .where(sql`${volEventRegistrationsTable.status} != 'cancelled'`)
+    .groupBy(volEventRegistrationsTable.eventId);
+  const countMap = new Map(counts.map(c => [c.eventId, Number(c.count)]));
+
   res.json(events.map(e => ({
     ...e,
     startTime: e.startTime.toISOString(),
     endTime: e.endTime.toISOString(),
     createdAt: e.createdAt.toISOString(),
     registered: registeredIds.has(e.id),
+    registrationCount: countMap.get(e.id) ?? 0,
   })));
 });
 
@@ -194,20 +202,112 @@ router.post("/volunteers/events", requireVolAuth, async (req: any, res) => {
   res.status(201).json({ ...event, startTime: event.startTime.toISOString(), endTime: event.endTime.toISOString(), createdAt: event.createdAt.toISOString() });
 });
 
+router.patch("/volunteers/events/:id", requireVolAuth, async (req: any, res) => {
+  if (req.volUser.role !== "coordinator") {
+    res.status(403).json({ error: "Only coordinators can update events" });
+    return;
+  }
+  const eventId = parseInt(req.params.id as string);
+  const { title, description, location, startTime, endTime, maxVolunteers, category, status } = req.body;
+
+  const updates: Record<string, unknown> = {};
+  if (title !== undefined) updates.title = title;
+  if (description !== undefined) updates.description = description;
+  if (location !== undefined) updates.location = location;
+  if (startTime !== undefined) updates.startTime = new Date(startTime);
+  if (endTime !== undefined) updates.endTime = new Date(endTime);
+  if (maxVolunteers !== undefined) updates.maxVolunteers = maxVolunteers;
+  if (category !== undefined) updates.category = category;
+  if (status !== undefined) updates.status = status;
+
+  if (Object.keys(updates).length === 0) {
+    res.status(400).json({ error: "No fields to update" });
+    return;
+  }
+
+  const [event] = await db.update(volEventsTable).set(updates)
+    .where(eq(volEventsTable.id, eventId)).returning();
+
+  if (!event) {
+    res.status(404).json({ error: "Event not found" });
+    return;
+  }
+
+  res.json({ ...event, startTime: event.startTime.toISOString(), endTime: event.endTime.toISOString(), createdAt: event.createdAt.toISOString() });
+});
+
+router.delete("/volunteers/events/:id", requireVolAuth, async (req: any, res) => {
+  if (req.volUser.role !== "coordinator") {
+    res.status(403).json({ error: "Only coordinators can delete events" });
+    return;
+  }
+  const eventId = parseInt(req.params.id as string);
+  await db.delete(volEventsTable).where(eq(volEventsTable.id, eventId));
+  res.json({ ok: true });
+});
+
+router.get("/volunteers/events/:id/registrations", requireVolAuth, async (req: any, res) => {
+  if (req.volUser.role !== "coordinator") {
+    res.status(403).json({ error: "Only coordinators can view registrations" });
+    return;
+  }
+  const eventId = parseInt(req.params.id as string);
+  const rows = await db
+    .select({
+      id: volEventRegistrationsTable.id,
+      volunteerId: volEventRegistrationsTable.volunteerId,
+      name: volUsersTable.name,
+      email: volUsersTable.email,
+      avatarInitials: volUsersTable.avatarInitials,
+      status: volEventRegistrationsTable.status,
+      registeredAt: volEventRegistrationsTable.registeredAt,
+    })
+    .from(volEventRegistrationsTable)
+    .innerJoin(volUsersTable, eq(volEventRegistrationsTable.volunteerId, volUsersTable.id))
+    .where(and(eq(volEventRegistrationsTable.eventId, eventId), sql`${volEventRegistrationsTable.status} != 'cancelled'`))
+    .orderBy(volEventRegistrationsTable.registeredAt);
+
+  res.json(rows.map(r => ({ ...r, registeredAt: r.registeredAt.toISOString() })));
+});
+
 router.post("/volunteers/events/:id/register", requireVolAuth, async (req: any, res) => {
   const eventId = parseInt(req.params.id as string);
+
+  const [event] = await db.select().from(volEventsTable).where(eq(volEventsTable.id, eventId)).limit(1);
+  if (!event) {
+    res.status(404).json({ error: "Event not found" });
+    return;
+  }
+  if (event.status !== "upcoming" && event.status !== "active") {
+    res.status(409).json({ error: "Registration is closed for this event" });
+    return;
+  }
+
   const existing = await db.select().from(volEventRegistrationsTable)
     .where(and(eq(volEventRegistrationsTable.volunteerId, req.volUser.sub), eq(volEventRegistrationsTable.eventId, eventId)))
     .limit(1);
 
-  if (existing.length > 0) {
-    if (existing[0].status === "cancelled") {
-      await db.update(volEventRegistrationsTable).set({ status: "registered" })
-        .where(eq(volEventRegistrationsTable.id, existing[0].id));
-      res.json({ ok: true });
+  if (existing.length > 0 && existing[0].status !== "cancelled") {
+    res.json({ already: true });
+    return;
+  }
+
+  // Capacity check (excludes the current user's cancelled row, which we may revive)
+  if (event.maxVolunteers != null) {
+    const [{ count } = { count: 0 }] = await db
+      .select({ count: sql<number>`COUNT(*)` })
+      .from(volEventRegistrationsTable)
+      .where(and(eq(volEventRegistrationsTable.eventId, eventId), sql`${volEventRegistrationsTable.status} != 'cancelled'`));
+    if (Number(count) >= event.maxVolunteers) {
+      res.status(409).json({ error: "This event is full" });
       return;
     }
-    res.json({ already: true });
+  }
+
+  if (existing.length > 0) {
+    await db.update(volEventRegistrationsTable).set({ status: "registered" })
+      .where(eq(volEventRegistrationsTable.id, existing[0].id));
+    res.json({ ok: true });
     return;
   }
 

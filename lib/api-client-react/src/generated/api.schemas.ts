@@ -551,7 +551,28 @@ export interface VolEvent {
   /** @nullable */
   category?: string | null;
   registered?: boolean;
+  registrationCount?: number;
   createdAt: string;
+}
+
+export type VolEventRegistrantStatus = typeof VolEventRegistrantStatus[keyof typeof VolEventRegistrantStatus];
+
+
+export const VolEventRegistrantStatus = {
+  registered: 'registered',
+  attended: 'attended',
+  cancelled: 'cancelled',
+} as const;
+
+export interface VolEventRegistrant {
+  id: number;
+  volunteerId: number;
+  name: string;
+  email: string;
+  /** @nullable */
+  avatarInitials?: string | null;
+  status: VolEventRegistrantStatus;
+  registeredAt: string;
 }
 
 export interface VolEventInput {
@@ -562,6 +583,31 @@ export interface VolEventInput {
   endTime: string;
   maxVolunteers?: number;
   category?: string;
+}
+
+export type VolEventUpdateInputStatus = typeof VolEventUpdateInputStatus[keyof typeof VolEventUpdateInputStatus];
+
+
+export const VolEventUpdateInputStatus = {
+  upcoming: 'upcoming',
+  active: 'active',
+  completed: 'completed',
+  cancelled: 'cancelled',
+} as const;
+
+export interface VolEventUpdateInput {
+  title?: string;
+  /** @nullable */
+  description?: string | null;
+  /** @nullable */
+  location?: string | null;
+  startTime?: string;
+  endTime?: string;
+  /** @nullable */
+  maxVolunteers?: number | null;
+  /** @nullable */
+  category?: string | null;
+  status?: VolEventUpdateInputStatus;
 }
 
 export interface VolMessage {

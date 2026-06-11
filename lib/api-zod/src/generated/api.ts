@@ -536,6 +536,7 @@ export const GetVolEventsResponseItem = zod.object({
   "status": zod.enum(['upcoming', 'active', 'completed', 'cancelled']),
   "category": zod.string().nullish(),
   "registered": zod.boolean().optional(),
+  "registrationCount": zod.number().optional(),
   "createdAt": zod.string()
 })
 export const GetVolEventsResponse = zod.array(GetVolEventsResponseItem)
@@ -553,6 +554,68 @@ export const CreateVolEventBody = zod.object({
   "maxVolunteers": zod.number().optional(),
   "category": zod.string().optional()
 })
+
+
+/**
+ * @summary Update or cancel an event (coordinator only)
+ */
+export const UpdateVolEventParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const UpdateVolEventBody = zod.object({
+  "title": zod.string().optional(),
+  "description": zod.string().nullish(),
+  "location": zod.string().nullish(),
+  "startTime": zod.string().optional(),
+  "endTime": zod.string().optional(),
+  "maxVolunteers": zod.number().nullish(),
+  "category": zod.string().nullish(),
+  "status": zod.enum(['upcoming', 'active', 'completed', 'cancelled']).optional()
+})
+
+export const UpdateVolEventResponse = zod.object({
+  "id": zod.number(),
+  "title": zod.string(),
+  "description": zod.string().nullish(),
+  "location": zod.string().nullish(),
+  "startTime": zod.string(),
+  "endTime": zod.string(),
+  "maxVolunteers": zod.number().nullish(),
+  "coordinatorId": zod.number().nullish(),
+  "status": zod.enum(['upcoming', 'active', 'completed', 'cancelled']),
+  "category": zod.string().nullish(),
+  "registered": zod.boolean().optional(),
+  "registrationCount": zod.number().optional(),
+  "createdAt": zod.string()
+})
+
+
+/**
+ * @summary Delete an event (coordinator only)
+ */
+export const DeleteVolEventParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+
+/**
+ * @summary List volunteers registered for an event (coordinator only)
+ */
+export const GetVolEventRegistrationsParams = zod.object({
+  "id": zod.coerce.number()
+})
+
+export const GetVolEventRegistrationsResponseItem = zod.object({
+  "id": zod.number(),
+  "volunteerId": zod.number(),
+  "name": zod.string(),
+  "email": zod.string(),
+  "avatarInitials": zod.string().nullish(),
+  "status": zod.enum(['registered', 'attended', 'cancelled']),
+  "registeredAt": zod.string()
+})
+export const GetVolEventRegistrationsResponse = zod.array(GetVolEventRegistrationsResponseItem)
 
 
 /**

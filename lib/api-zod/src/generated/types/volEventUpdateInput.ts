@@ -5,25 +5,19 @@
  * GHRI Foundation API
  * OpenAPI spec version: 0.1.0
  */
-import type { VolEventStatus } from './volEventStatus';
+import type { VolEventUpdateInputStatus } from './volEventUpdateInputStatus';
 
-export interface VolEvent {
-  id: number;
-  title: string;
+export interface VolEventUpdateInput {
+  title?: string;
   /** @nullable */
   description?: string | null;
   /** @nullable */
   location?: string | null;
-  startTime: string;
-  endTime: string;
+  startTime?: string;
+  endTime?: string;
   /** @nullable */
   maxVolunteers?: number | null;
   /** @nullable */
-  coordinatorId?: number | null;
-  status: VolEventStatus;
-  /** @nullable */
   category?: string | null;
-  registered?: boolean;
-  registrationCount?: number;
-  createdAt: string;
+  status?: VolEventUpdateInputStatus;
 }

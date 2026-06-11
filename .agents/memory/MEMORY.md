@@ -1,0 +1,1 @@
+- [GHRI API client auth](ghri-api-auth.md) — no global token getter is wired; every generated hook (queries AND mutations) must pass per-call request headers or it 401s.
