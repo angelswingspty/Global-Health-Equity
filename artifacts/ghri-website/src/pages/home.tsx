@@ -77,7 +77,7 @@ export default function Home() {
               <Link href="/donate">
                 <Button size="lg" className="w-full sm:w-auto text-lg px-8 py-6 h-auto">Donate</Button>
               </Link>
-              <Link href="/get-involved">
+              <Link href="/volunteers">
                 <Button size="lg" variant="outline" className="w-full sm:w-auto text-lg px-8 py-6 h-auto bg-transparent text-white border-white hover:bg-white hover:text-secondary">Get Involved</Button>
               </Link>
             </div>
