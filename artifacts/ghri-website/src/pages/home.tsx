@@ -171,7 +171,7 @@ export default function Home() {
             <Link href="/donate">
               <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-lg font-semibold">Donate</Button>
             </Link>
-            <Link href="/get-involved">
+            <Link href="/volunteers">
               <Button variant="outline" size="lg" className="w-full sm:w-auto h-14 px-8 text-lg font-semibold bg-transparent text-white border-white hover:bg-white hover:text-secondary">Volunteer</Button>
             </Link>
             <Link href="/contact">
