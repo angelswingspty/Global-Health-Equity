@@ -7,8 +7,8 @@ import { CheckCircle2 } from "lucide-react";
 export default function About() {
   const boardMembers = [
     { name: "Angel Ndubisi", role: "Founder & President" },
-    { name: "Dr. Daniel Notterman", role: "Board Member" },
-    { name: "Dr. Larry Chu", role: "Board Member" },
+    { name: "Dr. Daniel Notterman, MD", role: "Board Member" },
+    { name: "Dr. Larry Chu, MD", role: "Board Member" },
     { name: "King-David Ndubisi", role: "Board Member" }
   ];
 
