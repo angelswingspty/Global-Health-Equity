@@ -60,7 +60,7 @@ export function Footer() {
               <a href="#" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Twitter">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="#" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="LinkedIn">
+              <a href="https://www.linkedin.com/in/global-health-reform-initiative-ghri-103541375/" target="_blank" rel="noopener noreferrer" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="LinkedIn">
                 <Linkedin className="w-5 h-5" />
               </a>
               <a href="https://www.instagram.com/ghrifoundation" target="_blank" rel="noopener noreferrer" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Instagram">
