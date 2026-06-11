@@ -54,7 +54,7 @@ export function Footer() {
               </li>
             </ul>
             <div className="flex items-center gap-4 mt-6">
-              <a href="#" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Facebook">
+              <a href="https://www.facebook.com/Globalhealthreforminitiative/" target="_blank" rel="noopener noreferrer" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Facebook">
                 <Facebook className="w-5 h-5" />
               </a>
               <a href="#" className="text-secondary-foreground/80 hover:text-primary transition-colors" aria-label="Twitter">
