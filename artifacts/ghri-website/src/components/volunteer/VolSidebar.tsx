@@ -4,8 +4,6 @@ import { cn } from "@/lib/utils";
 import { useVolAuth } from "@/contexts/VolunteerAuthContext";
 import {
   LayoutDashboard,
-  BookOpen,
-  FileText,
   Clock,
   Calendar,
   MessageSquare,
@@ -16,8 +14,6 @@ import {
 
 const navItems = [
   { href: "/volunteers/dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/volunteers/training", label: "Training", icon: BookOpen },
-  { href: "/volunteers/waivers", label: "Waivers", icon: FileText },
   { href: "/volunteers/hours", label: "My Hours", icon: Clock },
   { href: "/volunteers/events", label: "Events", icon: Calendar },
   { href: "/volunteers/messages", label: "Messages", icon: MessageSquare },

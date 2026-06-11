@@ -2,10 +2,9 @@ import React from "react";
 import { useVolAuth } from "@/contexts/VolunteerAuthContext";
 import { VolSidebar } from "@/components/volunteer/VolSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Clock, Calendar, BookOpen, FileText, BarChart3, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
-import { useGetVolTraining, useGetVolWaivers, useGetVolHours, useGetVolEvents, useGetVolImpact } from "@workspace/api-client-react";
+import { Clock, Calendar, BarChart3, ArrowRight, FileText } from "lucide-react";
+import { useGetVolHours, useGetVolEvents, useGetVolImpact } from "@workspace/api-client-react";
 
 function StatCard({ icon: Icon, label, value, color }: { icon: React.ElementType; label: string; value: string | number; color: string }) {
   return (
@@ -29,26 +28,18 @@ export default function VolDashboard() {
   const { user, token, isCoordinator } = useVolAuth();
   const authHeaders = { request: { headers: { Authorization: `Bearer ${token}` } } };
 
-  const { data: training } = useGetVolTraining(authHeaders);
-  const { data: waivers } = useGetVolWaivers(authHeaders);
   const { data: hours } = useGetVolHours(authHeaders);
   const { data: events } = useGetVolEvents(authHeaders);
   const { data: impact } = useGetVolImpact(authHeaders);
 
-  const completedTraining = training?.filter(t => t.completed).length ?? 0;
-  const totalTraining = training?.filter(t => t.required).length ?? 0;
-  const signedWaivers = waivers?.filter(w => w.signed).length ?? 0;
-  const totalWaivers = waivers?.filter(w => w.required).length ?? 0;
   const pendingHours = hours?.filter(h => h.status === "pending").length ?? 0;
   const upcomingEvents = events?.filter(e => e.status === "upcoming" && e.registered).length ?? 0;
 
-  const onboarded = completedTraining >= totalTraining && signedWaivers >= totalWaivers;
-
   const quickActions = [
-    { href: "/volunteers/training", label: "Continue Training", icon: BookOpen, desc: `${completedTraining}/${totalTraining} modules complete` },
-    { href: "/volunteers/waivers", label: "Sign Waivers", icon: FileText, desc: `${signedWaivers}/${totalWaivers} signed` },
     { href: "/volunteers/hours", label: "Log Hours", icon: Clock, desc: `${pendingHours} pending review` },
     { href: "/volunteers/events", label: "Browse Events", icon: Calendar, desc: `${upcomingEvents} registered` },
+    { href: "/volunteers/messages", label: "Messages", icon: FileText, desc: "View your messages" },
+    { href: "/volunteers/impact", label: "My Impact", icon: BarChart3, desc: "See your contribution" },
   ];
 
   return (
@@ -63,54 +54,14 @@ export default function VolDashboard() {
           </p>
         </div>
 
-        {/* Onboarding alert */}
-        {!onboarded && (
-          <Card className="mb-6 border-amber-200 bg-amber-50">
-            <CardContent className="pt-4 pb-4">
-              <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-amber-800 text-sm">Complete your onboarding</p>
-                  <p className="text-amber-700 text-sm mt-0.5">Finish all required training modules and sign mandatory waivers to become a fully active volunteer.</p>
-                  <div className="flex gap-3 mt-3">
-                    {completedTraining < totalTraining && (
-                      <Link href="/volunteers/training">
-                        <Button size="sm" variant="outline" className="border-amber-400 text-amber-800 hover:bg-amber-100 text-xs">
-                          Complete Training
-                        </Button>
-                      </Link>
-                    )}
-                    {signedWaivers < totalWaivers && (
-                      <Link href="/volunteers/waivers">
-                        <Button size="sm" variant="outline" className="border-amber-400 text-amber-800 hover:bg-amber-100 text-xs">
-                          Sign Waivers
-                        </Button>
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {onboarded && (
-          <Card className="mb-6 border-green-200 bg-green-50">
-            <CardContent className="pt-4 pb-4 flex items-center gap-3">
-              <CheckCircle2 className="w-5 h-5 text-green-600 flex-shrink-0" />
-              <p className="text-sm font-medium text-green-800">Onboarding complete — you're a fully active GHRI volunteer!</p>
-            </CardContent>
-          </Card>
-        )}
-
         {/* Stats */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard icon={Clock} label="Approved Hours" value={impact?.approvedHours ?? 0} color="bg-[#0093D5]" />
           <StatCard icon={Calendar} label="Events Attended" value={impact?.eventsAttended ?? 0} color="bg-[#003F5C]" />
-          <StatCard icon={BookOpen} label="Modules Done" value={`${completedTraining}/${training?.length ?? 0}`} color="bg-emerald-500" />
+          <StatCard icon={FileText} label="Hours Pending" value={pendingHours} color="bg-orange-500" />
           {isCoordinator
             ? <StatCard icon={BarChart3} label="Active Volunteers" value={impact?.activeVolunteers ?? 0} color="bg-purple-500" />
-            : <StatCard icon={FileText} label="Hours Pending" value={pendingHours} color="bg-orange-500" />
+            : <StatCard icon={Calendar} label="Events Registered" value={upcomingEvents} color="bg-emerald-500" />
           }
         </div>
 
